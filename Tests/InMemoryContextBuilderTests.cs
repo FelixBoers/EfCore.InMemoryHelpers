@@ -2,6 +2,7 @@
 using Xunit;
 using Xunit.Abstractions;
 using System.Linq;
+using ApprovalTests;
 using EfCore.InMemoryHelpers;
 
 public class InMemoryContextBuilderTests : TestBase
@@ -19,6 +20,26 @@ public class InMemoryContextBuilderTests : TestBase
             context.SaveChanges();
             var item = context.TestEntities.ToList();
             Assert.Single(item);
+        }
+    }
+
+    [Fact]
+    public void AssertUniqueIndexThrows()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var user1 = new TestEntity
+            {
+                Property = "prop"
+            };
+            context.Add(user1);
+            var user2 = new TestEntity
+            {
+                Property = "prop"
+            };
+            context.Add(user2);
+            var exception = Assert.Throws<Exception>(()=> context.SaveChanges());
+            Approvals.Verify(exception.Message);
         }
     }
 

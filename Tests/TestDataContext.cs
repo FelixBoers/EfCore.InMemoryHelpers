@@ -10,8 +10,11 @@ class TestDataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TestEntity>()
-            .Property(b => b.Property)
+        var entity = modelBuilder.Entity<TestEntity>();
+        entity.Property(b => b.Property)
             .IsRequired();
+
+        entity.HasIndex(u => u.Property)
+            .IsUnique();
     }
 }

@@ -1,5 +1,7 @@
 # EfCore.InMemoryHelpers
 
+Provides a wrapper around the [EF Core In-Memory Database Provider](https://docs.microsoft.com/en-us/ef/core/providers/in-memory/). Specifically works around the following EF bugs.
+
  * [InMemory: Improve in-memory key generation](https://github.com/aspnet/EntityFrameworkCore/issues/6872)
  * [Add FK constraint checking to the in-memory provider](https://github.com/aspnet/EntityFrameworkCore/issues/2166)
 

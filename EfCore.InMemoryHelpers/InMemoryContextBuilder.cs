@@ -10,19 +10,26 @@ namespace EfCore.InMemoryHelpers
             where TContext : DbContext
         {
             var builder = new DbContextOptionsBuilder<TContext>();
-            return Build(builder);
+            return Build<TContext>(builder);
         }
 
-        public static TContext Build<TContext>(DbContextOptionsBuilder<TContext> builder)
+        public static TContext Build<TContext>(DbContextOptionsBuilder builder)
             where TContext : DbContext
         {
+            Guard.AgainstNull(nameof(builder), builder);
+            return Build(builder, x => (TContext) Activator.CreateInstance(typeof(TContext), x));
+        }
+
+        public static TContext Build<TContext>(DbContextOptionsBuilder builder, Func<DbContextOptions, TContext> contextConstructor)
+            where TContext : DbContext
+        {
+            Guard.AgainstNull(nameof(builder), builder);
+            Guard.AgainstNull(nameof(contextConstructor), contextConstructor);
             builder.UseInMemoryDatabase(Guid.NewGuid().ToString());
             builder.ReplaceService<IDbContextDependencies, DbContextDependenciesEx>();
-            Activator.CreateInstance(typeof(TContext), builder.Options);
-            var dbContextOptions = (DbContextOptions) builder.Options;
-            var dataContext = (TContext) Activator.CreateInstance(typeof(TContext), dbContextOptions);
-            dataContext.ResetValueGenerators();
-            return dataContext;
+            var context = contextConstructor(builder.Options);
+            context.ResetValueGenerators();
+            return context;
         }
     }
 }

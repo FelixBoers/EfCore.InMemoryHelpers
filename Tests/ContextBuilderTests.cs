@@ -5,18 +5,18 @@ using System.Linq;
 using ApprovalTests;
 using EfCore.InMemoryHelpers;
 
-public class InMemoryContextBuilderTests : TestBase
+public class ContextBuilderTests : TestBase
 {
     [Fact]
     public void GetInMemoryContext()
     {
         using (var context = InMemoryContextBuilder.Build<TestDataContext>())
         {
-            var user = new TestEntity
+            var entity = new TestEntity
             {
                 Property = "prop"
             };
-            context.Add(user);
+            context.Add(entity);
             context.SaveChanges();
             var item = context.TestEntities.ToList();
             Assert.Single(item);
@@ -24,15 +24,15 @@ public class InMemoryContextBuilderTests : TestBase
     }
 
     [Fact]
-    public void AssertUniqueIndexThrows()
+    public void UniqueIndexThrows()
     {
         using (var context = InMemoryContextBuilder.Build<TestDataContext>())
         {
-            var user1 = new TestEntity
+            var entity1 = new TestEntity
             {
                 Property = "prop"
             };
-            context.Add(user1);
+            context.Add(entity1);
             var user2 = new TestEntity
             {
                 Property = "prop"
@@ -48,11 +48,11 @@ public class InMemoryContextBuilderTests : TestBase
     {
         using (var context = InMemoryContextBuilder.Build<TestDataContext>())
         {
-            var user = new TestEntity
+            var entity = new TestEntity
             {
                 Property = "prop1"
             };
-            context.Add(user);
+            context.Add(entity);
             context.SaveChanges();
             var id = context.TestEntities.Single().Id;
             Assert.Equal(1, id);
@@ -60,18 +60,18 @@ public class InMemoryContextBuilderTests : TestBase
 
         using (var context = InMemoryContextBuilder.Build<TestDataContext>())
         {
-            var user = new TestEntity
+            var entity = new TestEntity
             {
                 Property = "prop2"
             };
-            context.Add(user);
+            context.Add(entity);
             context.SaveChanges();
             var id = context.TestEntities.Single().Id;
             Assert.Equal(1, id);
         }
     }
 
-    public InMemoryContextBuilderTests(ITestOutputHelper output) :
+    public ContextBuilderTests(ITestOutputHelper output) :
         base(output)
     {
     }

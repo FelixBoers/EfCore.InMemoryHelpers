@@ -1,5 +1,4 @@
-﻿using System;
-using EfCore.InMemoryHelpers;
+﻿using EfCore.InMemoryHelpers;
 using Microsoft.EntityFrameworkCore;
 
 class Sample
@@ -16,6 +15,7 @@ class Sample
             context.SaveChanges();
         }
     }
+
     void WithBuilder()
     {
         var builder = new DbContextOptionsBuilder<MyDataContext>();
@@ -29,6 +29,7 @@ class Sample
             context.SaveChanges();
         }
     }
+
     void WithConstructor()
     {
         var builder = new DbContextOptionsBuilder<MyDataContext>();

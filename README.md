@@ -2,8 +2,10 @@
 
 Provides a wrapper around the [EF Core In-Memory Database Provider](https://docs.microsoft.com/en-us/ef/core/providers/in-memory/). Specifically works around the following EF bugs.
 
- * [InMemory: Improve in-memory key generation](https://github.com/aspnet/EntityFrameworkCore/issues/6872)
- * [Add FK constraint checking to the in-memory provider](https://github.com/aspnet/EntityFrameworkCore/issues/2166)
+ * [InMemory: Improve in-memory key generation](https://github.com/aspnet/EntityFrameworkCore/issues/6872) <br>
+  Reasoning: For many bootstrapping an integration tests, the id generation should be predictable, i.e an in-memory persistence should not share static mutable state. 
+ * [Add foreign key constraint checking to the in-memory provider](https://github.com/aspnet/EntityFrameworkCore/issues/2166) <br>
+  Reasoning: It is desirable for foreign key to be validated when running unit tests. This allows bugs to be caught earlier without the need for integration testing against a real database.    
 
 
 ## NuGet  [![NuGet Status](http://img.shields.io/nuget/v/EfCore.InMemoryHelpers.svg?style=flat)](https://www.nuget.org/packages/EfCore.InMemoryHelpers/)

@@ -9,9 +9,9 @@ class DbContextDependenciesEx : IDbContextDependencies
 {
     DbContextDependencies inner;
 
-    public DbContextDependenciesEx(ICurrentDbContext currentContext, IChangeDetector changeDetector, IDbSetSource setSource, IDbQuerySource querySource, IEntityFinderSource entityFinderSource, IEntityGraphAttacher entityGraphAttacher, IModel model, IAsyncQueryProvider queryProvider, IStateManager stateManager, IDiagnosticsLogger<DbLoggerCategory.Update> updateLogger, IDiagnosticsLogger<DbLoggerCategory.Infrastructure> infrastuctureLogger)
+    public DbContextDependenciesEx(ICurrentDbContext currentContext, IChangeDetector changeDetector, IDbSetSource setSource, IDbQuerySource querySource, IEntityFinderSource entityFinderSource, IEntityGraphAttacher entityGraphAttacher, IModel model, IAsyncQueryProvider queryProvider, IStateManager stateManager, IDiagnosticsLogger<DbLoggerCategory.Update> updateLogger, IDiagnosticsLogger<DbLoggerCategory.Infrastructure> infrastructureLogger)
     {
-        inner = new DbContextDependencies(currentContext, changeDetector, setSource, querySource, entityFinderSource, entityGraphAttacher, model, queryProvider, new StateManagerWrapper(stateManager), updateLogger, infrastuctureLogger);
+        inner = new DbContextDependencies(currentContext, changeDetector, setSource, querySource, entityFinderSource, entityGraphAttacher, model, queryProvider, new StateManagerWrapper(stateManager), updateLogger, infrastructureLogger);
     }
 
     public IModel Model => inner.Model;

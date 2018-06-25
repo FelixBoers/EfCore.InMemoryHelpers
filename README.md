@@ -10,7 +10,7 @@ Provides a wrapper around the [EF Core In-Memory Database Provider](https://docs
   Reasoning: It is desirable for exceptions to be thrown when a update violates a RowVersion. This allows bugs to be caught earlier without the need for integration testing against a real database.  
 
 
-## NuGet  [![NuGet Status](http://img.shields.io/nuget/v/EfCore.InMemoryHelpers.svg?style=flat)](https://www.nuget.org/packages/EfCore.InMemoryHelpers/)
+## NuGet [![NuGet Status](http://img.shields.io/nuget/v/EfCore.InMemoryHelpers.svg?longCache=true&style=flat)](https://www.nuget.org/packages/EfCore.InMemoryHelpers/)
 
 https://nuget.org/packages/EfCore.InMemoryHelpers/
 

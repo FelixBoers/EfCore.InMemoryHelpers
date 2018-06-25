@@ -1,0 +1,3 @@
+﻿Conflicting values for unique index. Entity: UniqueIndexTests+TestEntity,
+Index Properties:
+    Property='prop'

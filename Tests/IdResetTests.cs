@@ -4,29 +4,40 @@ using System.Linq;
 using EfCore.InMemoryHelpers;
 using Microsoft.EntityFrameworkCore;
 
-public class ContextBuilderTests : TestBase
+public class IdResetTests : TestBase
 {
     [Fact]
-    public void GetInMemoryContext()
+    public void AssertIdIsReset()
     {
         using (var context = InMemoryContextBuilder.Build<TestDataContext>())
         {
             var entity = new TestEntity
             {
-                Property = "prop"
+                Property = "prop1"
             };
             context.Add(entity);
             context.SaveChanges();
-            var item = context.TestEntities.ToList();
-            Assert.Single(item);
+            var id = context.TestEntities.Single().Id;
+            Assert.Equal(1, id);
+        }
+
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity = new TestEntity
+            {
+                Property = "prop2"
+            };
+            context.Add(entity);
+            context.SaveChanges();
+            var id = context.TestEntities.Single().Id;
+            Assert.Equal(1, id);
         }
     }
 
-    public ContextBuilderTests(ITestOutputHelper output) :
+    public IdResetTests(ITestOutputHelper output) :
         base(output)
     {
     }
-
     public class TestEntity
     {
         public int Id { get; set; }

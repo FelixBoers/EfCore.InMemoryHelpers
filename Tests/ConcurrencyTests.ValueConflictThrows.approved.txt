@@ -1,0 +1,1 @@
+﻿Update RowVersion should have same RowVersion as previous. Expected RowVersion: first. Actual RowVersion: second.  Type: ConcurrencyTests+TestEntity. Id: 1.

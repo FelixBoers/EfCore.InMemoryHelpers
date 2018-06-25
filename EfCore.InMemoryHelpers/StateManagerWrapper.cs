@@ -11,25 +11,30 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
+// ReSharper disable IdentifierTypo
 
 class StateManagerWrapper : IStateManager
 {
     IStateManager inner;
+    ConcurrencyValidator concurrencyValidator;
 
     public StateManagerWrapper(IStateManager stateManager)
     {
         inner = stateManager;
+        concurrencyValidator = new ConcurrencyValidator();
     }
 
     public int SaveChanges(bool acceptAllChangesOnSuccess)
     {
         inner.Context.ValidateIndexes();
+        concurrencyValidator.ValidateIndexes(inner.Context);
         return inner.SaveChanges(acceptAllChangesOnSuccess);
     }
 
     public Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellation = default)
     {
         inner.Context.ValidateIndexes();
+        concurrencyValidator.ValidateIndexes(inner.Context);
         return inner.SaveChangesAsync(acceptAllChangesOnSuccess, cancellation);
     }
 

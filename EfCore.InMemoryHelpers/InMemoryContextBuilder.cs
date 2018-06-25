@@ -6,10 +6,11 @@ namespace EfCore.InMemoryHelpers
 {
     public static class InMemoryContextBuilder
     {
-        public static TContext Build<TContext>()
+        public static TContext Build<TContext>(bool enableSensitiveDataLogging = true)
             where TContext : DbContext
         {
             var builder = new DbContextOptionsBuilder<TContext>();
+            builder.EnableSensitiveDataLogging(enableSensitiveDataLogging);
             return Build<TContext>(builder);
         }
 

@@ -68,18 +68,11 @@ class ConcurrencyValidator
         {
             var bytes = getter(o);
 
-            if (bytes == null)
+            if (bytes !=null && bytes.SequenceEqual(rowVersion))
             {
-                throw new Exception($"Update RowVersion should have same RowVersion as previous. Expected RowVersion: {rowVersion.GetGuid()}. Actual RowVersion: null. {exceptionSuffix}");
+                rowVersion = RowVersion.New();
+                setter(o, rowVersion);
             }
-
-            if (!bytes.SequenceEqual(rowVersion))
-            {
-                throw new Exception($"Update RowVersion should have same RowVersion as previous. Expected RowVersion: {rowVersion.GetGuid()}. Actual RowVersion: {bytes.GetGuid()}. {exceptionSuffix}");
-            }
-
-            rowVersion = RowVersion.New();
-            setter(o, rowVersion);
         }
     }
 }

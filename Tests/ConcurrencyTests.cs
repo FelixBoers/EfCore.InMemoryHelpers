@@ -24,8 +24,8 @@ public class ConcurrencyTests : TestBase
                 Property = "Something new"
             };
             context.Entry(update).Property("Property").IsModified = true;
-            var exception = Assert.Throws<Exception>(() => context.SaveChanges());
-            Approvals.Verify(exception.Message.Replace(entity.Timestamp.GetString(), "first"));
+            var exception = Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
+            Approvals.Verify(exception.Message);
         }
     }
 
@@ -71,11 +71,8 @@ public class ConcurrencyTests : TestBase
                 Timestamp = RowVersion.New()
             };
             context.Entry(update).Property("Property").IsModified = true;
-            var exception = Assert.Throws<Exception>(() => context.SaveChanges());
-            var message = exception.Message
-                .Replace(entity.Timestamp.GetString(), "first")
-                .Replace(update.Timestamp.GetString(), "second");
-            Approvals.Verify(message);
+            var exception = Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
+            Approvals.Verify(exception.Message);
         }
     }
 

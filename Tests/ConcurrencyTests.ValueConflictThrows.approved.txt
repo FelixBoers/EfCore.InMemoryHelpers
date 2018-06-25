@@ -1,1 +1,1 @@
-﻿Update RowVersion should have same RowVersion as previous. Expected RowVersion: first. Actual RowVersion: second.  Type: ConcurrencyTests+TestEntity. Id: 1.
+﻿Conflicts were detected for instance of entity type 'TestEntity' with the key value '{Id: 1}' on the concurrency token property values {Timestamp: System.Byte[]}, with corresponding database values {Timestamp: System.Byte[]}.

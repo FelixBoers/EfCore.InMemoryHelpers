@@ -22,7 +22,7 @@ public class UniqueIndexTests : TestBase
                 Property = "prop"
             };
             context.Add(user2);
-            var exception = Assert.Throws<Exception>(()=> context.SaveChanges());
+            var exception = Assert.Throws<Exception>(() => context.SaveChanges());
             Approvals.Verify(exception.Message);
         }
     }
@@ -31,11 +31,13 @@ public class UniqueIndexTests : TestBase
         base(output)
     {
     }
+
     public class TestEntity
     {
         public int Id { get; set; }
         public string Property { get; set; }
     }
+
     class TestDataContext : DbContext
     {
         public DbSet<TestEntity> TestEntities { get; set; }

@@ -38,6 +38,7 @@ public class IdResetTests : TestBase
         base(output)
     {
     }
+
     public class TestEntity
     {
         public int Id { get; set; }

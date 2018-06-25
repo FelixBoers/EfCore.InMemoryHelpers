@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using ApprovalTests;
@@ -25,7 +24,7 @@ public class ConcurrencyTests : TestBase
                 Property = "Something new"
             };
             context.Entry(update).Property("Property").IsModified = true;
-            var exception = Assert.Throws<Exception>(()=> context.SaveChanges());
+            var exception = Assert.Throws<Exception>(() => context.SaveChanges());
             Approvals.Verify(exception.Message.Replace(entity.Timestamp.GetString(), "first"));
         }
     }
@@ -138,12 +137,14 @@ public class ConcurrencyTests : TestBase
         base(output)
     {
     }
+
     public class TestEntity
     {
         public int Id { get; set; }
         public string Property { get; set; }
         public byte[] Timestamp { get; set; }
     }
+
     class TestDataContext : DbContext
     {
         public DbSet<TestEntity> TestEntities { get; set; }

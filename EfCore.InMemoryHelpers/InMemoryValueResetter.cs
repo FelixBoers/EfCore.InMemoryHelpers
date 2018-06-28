@@ -14,6 +14,7 @@ static class InMemoryValueResetter
         var cache = context.GetService<IValueGeneratorCache>();
 
         foreach (var keyProperty in context.Model.GetEntityTypes()
+            .Where(x => !x.IsQueryType)
             .Select(e => e.FindPrimaryKey().Properties[0])
             .Where(p => p.ClrType == typeof(int)
                         && p.ValueGenerated == ValueGenerated.OnAdd))

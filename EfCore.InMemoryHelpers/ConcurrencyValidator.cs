@@ -43,9 +43,10 @@ class ConcurrencyValidator
 
         var exceptionSuffix = $" Type: {first.GetType().FullName}. {primaryKey.Name}: {primaryKeyValue}.";
         //If seen
+        var version = getter(first);
         if (seen.Any(x => ReferenceEquals(x, first)))
         {
-            rowVersion = getter(first);
+            rowVersion = version;
             if (rowVersion == null)
             {
                 throw new Exception($"Row version has been incorrectly set to null. {exceptionSuffix}");
@@ -54,7 +55,7 @@ class ConcurrencyValidator
         //If not seen
         else
         {
-            if (getter(first) != null)
+            if (version != null)
             {
                 throw new Exception($"The first save must have a null RowVersion. {exceptionSuffix}");
             }

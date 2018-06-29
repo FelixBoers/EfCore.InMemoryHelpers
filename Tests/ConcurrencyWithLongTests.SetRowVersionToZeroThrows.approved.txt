@@ -1,0 +1,1 @@
+﻿Row version has been incorrectly set to null.  Type: ConcurrencyWithLongTests+TestEntity. Id: 1.

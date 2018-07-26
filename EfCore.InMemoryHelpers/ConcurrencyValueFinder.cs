@@ -9,7 +9,7 @@ static class ConcurrencyValueFinder
     public static bool GetConcurrency(this IEntityType entityType, out Action<object, byte[]> setter, out Func<object, byte[]> getter)
     {
         var concurrencyProperty = entityType.GetProperties()
-            .SingleOrDefault(x => x.IsConcurrencyToken);
+            .SingleOrDefault(x => x.IsConcurrencyToken && x.ValueGenerated == ValueGenerated.OnAddOrUpdate);
         if (concurrencyProperty == null)
         {
             setter = null;

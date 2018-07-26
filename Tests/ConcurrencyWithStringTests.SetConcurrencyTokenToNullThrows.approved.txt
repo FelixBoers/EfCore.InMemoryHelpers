@@ -1,0 +1,1 @@
+﻿Conflicts were detected for instance of entity type 'TestEntity' with the key value '{Id: 1}' on the concurrency token property values {ConcurrencyToken: }, with corresponding database values {ConcurrencyToken: 616e2ca1a52a4c57afbfe80ecc54125c}.

@@ -9,6 +9,8 @@ Provides a wrapper around the [EF Core In-Memory Database Provider](https://docs
  * Add support for [Timestamp/row version](https://docs.microsoft.com/en-us/ef/core/modeling/concurrency#timestamprow-version) (`[Timestamp]`, and `.Property(p => p.X).IsRowVersion()`)<br>
   Reasoning: It is desirable for exceptions to be thrown when a update violates a RowVersion. This allows bugs to be caught earlier without the need for integration testing against a real database.  
 
+**This project is supported by the community via [Patreon sponsorship](https://www.patreon.com/join/simoncropp). If you are using this project to deliver business value or build commercial software it is expected that you will provide support [via Patreon](https://www.patreon.com/join/simoncropp). If you do not feel this project is worth supporting, to ensure its long term existence, perhaps you should find an alternative tool or build the functionality yourself.**
+
 
 ## NuGet [![NuGet Status](http://img.shields.io/nuget/v/EfCore.InMemoryHelpers.svg?longCache=true&style=flat)](https://www.nuget.org/packages/EfCore.InMemoryHelpers/)
 

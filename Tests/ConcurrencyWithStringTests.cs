@@ -1,5 +1,4 @@
-﻿using System;
-using Xunit;
+﻿using Xunit;
 using Xunit.Abstractions;
 using ApprovalTests;
 using EfCore.InMemoryHelpers;

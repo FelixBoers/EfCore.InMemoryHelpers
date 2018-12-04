@@ -103,9 +103,9 @@ class StateManagerWrapper : IStateManager
         inner.RecordReferencedUntrackedEntity(referencedEntity,navigation, referencedFromEntry);
     }
 
-    public IEnumerable<Tuple<INavigation, InternalEntityEntry>> GetRecordedReferers(object referencedEntity, bool clear)
+    public IEnumerable<Tuple<INavigation, InternalEntityEntry>> GetRecordedReferrers(object referencedEntity, bool clear)
     {
-        return inner.GetRecordedReferers(referencedEntity, clear);
+        return inner.GetRecordedReferrers(referencedEntity, clear);
     }
 
     public InternalEntityEntry GetPrincipal(InternalEntityEntry dependentEntry, IForeignKey foreignKey)

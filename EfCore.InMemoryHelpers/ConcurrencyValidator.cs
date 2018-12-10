@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 class ConcurrencyValidator
 {
@@ -19,37 +17,24 @@ class ConcurrencyValidator
                 continue;
             }
 
-            var primaryKey = entityType.GetProperties().SingleOrDefault(x => x.IsPrimaryKey());
-            if (primaryKey == null)
-            {
-                continue;
-            }
-
             var entries = grouping.ToList();
             var objects = entries.Select(x => x.Entity).ToList();
-
-            var primaryKeyGetter = primaryKey.GetGetter();
-            foreach (var objectsByKey in objects.GroupBy(x => primaryKeyGetter.GetClrValue(x)))
-            {
-                Validate(getter, setter, primaryKey, objectsByKey.Key, objectsByKey.ToList());
-            }
+            Validate(getter, setter, objects);
         }
     }
 
-    void Validate(Func<object, byte[]> getter, Action<object, byte[]> setter, IProperty primaryKey, object primaryKeyValue, List<object> objects)
+    void Validate(Func<object, byte[]> getter, Action<object, byte[]> setter, List<object> objects)
     {
         byte[] rowVersion;
         var first = objects.First();
 
-        var exceptionSuffix = $" Type: {first.GetType().FullName}. {primaryKey.Name}: {primaryKeyValue}.";
-        //If seen
         var version = getter(first);
         if (seen.Any(x => ReferenceEquals(x, first)))
         {
             rowVersion = version;
             if (rowVersion == null)
             {
-                throw new Exception($"Row version has been incorrectly set to null. {exceptionSuffix}");
+                throw new Exception("Row version has been incorrectly set to null");
             }
         }
         //If not seen
@@ -57,7 +42,7 @@ class ConcurrencyValidator
         {
             if (version != null)
             {
-                throw new Exception($"The first save must have a null RowVersion. {exceptionSuffix}");
+                throw new Exception("The first save must have a null RowVersion");
             }
 
             rowVersion = RowVersion.New();
@@ -69,7 +54,7 @@ class ConcurrencyValidator
         {
             var bytes = getter(o);
 
-            if (bytes !=null && bytes.SequenceEqual(rowVersion))
+            if (bytes != null && bytes.SequenceEqual(rowVersion))
             {
                 rowVersion = RowVersion.New();
                 setter(o, rowVersion);

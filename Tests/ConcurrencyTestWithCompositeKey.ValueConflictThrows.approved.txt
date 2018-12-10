@@ -1,0 +1,1 @@
+﻿Conflicts were detected for instance of entity type 'TestEntity' with the key value '{Id1: 0, Id2: 0}' on the concurrency token property values {Timestamp: System.Byte[]}, with corresponding database values {Timestamp: System.Byte[]}.

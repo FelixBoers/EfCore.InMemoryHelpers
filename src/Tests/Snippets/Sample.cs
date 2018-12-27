@@ -5,6 +5,7 @@ class Sample
 {
     void Simple()
     {
+        #region simple
         using (var context = InMemoryContextBuilder.Build<MyDataContext>())
         {
             var entity = new MyEntity
@@ -14,10 +15,12 @@ class Sample
             context.Add(entity);
             context.SaveChanges();
         }
+        #endregion
     }
 
     void WithBuilder()
     {
+        #region withBuilder
         var builder = new DbContextOptionsBuilder<MyDataContext>();
         using (var context = InMemoryContextBuilder.Build<MyDataContext>(builder))
         {
@@ -28,10 +31,12 @@ class Sample
             context.Add(entity);
             context.SaveChanges();
         }
+        #endregion
     }
 
     void WithConstructor()
     {
+        #region customContextConstructor
         var builder = new DbContextOptionsBuilder<MyDataContext>();
         using (var context = InMemoryContextBuilder.Build(builder, options => new MyDataContext(options)))
         {
@@ -42,5 +47,6 @@ class Sample
             context.Add(entity);
             context.SaveChanges();
         }
+        #endregion
     }
 }

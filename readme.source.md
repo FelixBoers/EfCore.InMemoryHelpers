@@ -23,64 +23,19 @@ https://nuget.org/packages/EfCore.InMemoryHelpers/
 
 The main entry point is `InMemoryContextBuilder` which can be used to build an in-memory context.
 
-<!-- snippet: simple -->
-```cs
-using (var context = InMemoryContextBuilder.Build<MyDataContext>())
-{
-    var entity = new MyEntity
-    {
-        Property = "prop"
-    };
-    context.Add(entity);
-    context.SaveChanges();
-}
-```
-<!-- endsnippet -->
+snippet: simple
 
 A custom `DbContextOptionsBuilder` can be passed in:
 
-<!-- snippet: withBuilder -->
-```cs
-var builder = new DbContextOptionsBuilder<MyDataContext>();
-using (var context = InMemoryContextBuilder.Build<MyDataContext>(builder))
-{
-    var entity = new MyEntity
-    {
-        Property = "prop"
-    };
-    context.Add(entity);
-    context.SaveChanges();
-}
-```
-<!-- endsnippet -->
+snippet: withBuilder
 
 Both the above usages assume that the target context has a public constructor that accepts a `DbContextOptions`.
 
-<!-- snippet: dataContextCtor -->
-```cs
-public MyDataContext(DbContextOptions options) :
-    base(options)
-{
-}
-```
-<!-- endsnippet -->
+snippet: dataContextCtor
 
 If this is not the case a custom context constructor can be passed in:
 
-<!-- snippet: customContextConstructor -->
-```cs
-var builder = new DbContextOptionsBuilder<MyDataContext>();
-using (var context = InMemoryContextBuilder.Build(builder, options => new MyDataContext(options)))
-{
-    var entity = new MyEntity
-    {
-        Property = "prop"
-    };
-    context.Add(entity);
-    context.SaveChanges();
-}
-```
-<!-- endsnippet -->
+snippet: customContextConstructor
 
 
 ## Icon

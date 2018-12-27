@@ -11,7 +11,7 @@
     <PackageTags>EntityFrameworkCore, EntityFramework, InMemory</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/EfCore.InMemoryHelpers/master/icon.png</PackageIconUrl>
     <PackageProjectUrl>http://github.com/SimonCropp/EfCore.InMemoryHelpers</PackageProjectUrl>
-    <PackageOutputPath>..\nugets</PackageOutputPath>
+    <PackageOutputPath>..\..\nugets</PackageOutputPath>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../key.snk</AssemblyOriginatorKeyFile>

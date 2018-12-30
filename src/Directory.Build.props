@@ -5,8 +5,7 @@
     <LangVersion>latest</LangVersion>
     <NoWarn>CS1591</NoWarn>
     <Version>1.3.1</Version>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)). All rights reserved</Copyright>
     <PackageTags>EntityFrameworkCore, EntityFramework, InMemory</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/EfCore.InMemoryHelpers/master/icon.png</PackageIconUrl>

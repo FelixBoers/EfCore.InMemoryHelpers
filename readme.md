@@ -35,6 +35,7 @@ using (var context = InMemoryContextBuilder.Build<MyDataContext>())
     context.SaveChanges();
 }
 ```
+<sup>[snippet source](/src/Tests/Snippets/Sample.cs#L8-L18)</sup>
 <!-- endsnippet -->
 
 A custom `DbContextOptionsBuilder` can be passed in:
@@ -52,6 +53,7 @@ using (var context = InMemoryContextBuilder.Build<MyDataContext>(builder))
     context.SaveChanges();
 }
 ```
+<sup>[snippet source](/src/Tests/Snippets/Sample.cs#L23-L34)</sup>
 <!-- endsnippet -->
 
 Both the above usages assume that the target context has a public constructor that accepts a `DbContextOptions`.
@@ -63,6 +65,7 @@ public MyDataContext(DbContextOptions options) :
 {
 }
 ```
+<sup>[snippet source](/src/Tests/Snippets/MyDataContext.cs#L5-L12)</sup>
 <!-- endsnippet -->
 
 If this is not the case a custom context constructor can be passed in:
@@ -80,6 +83,7 @@ using (var context = InMemoryContextBuilder.Build(builder, options => new MyData
     context.SaveChanges();
 }
 ```
+<sup>[snippet source](/src/Tests/Snippets/Sample.cs#L39-L50)</sup>
 <!-- endsnippet -->
 
 

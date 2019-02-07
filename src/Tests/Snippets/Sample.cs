@@ -49,4 +49,20 @@ class Sample
         }
         #endregion
     }
+    
+    void WithDatabaseName()
+    {
+        #region withDatabaseName
+        var builder = new DbContextOptionsBuilder<MyDataContext>();
+        using (var context = InMemoryContextBuilder.Build(builder, options => new MyDataContext(options)))
+        {
+            var entity = new MyEntity
+            {
+                Property = "prop"
+            };
+            context.Add(entity);
+            context.SaveChanges();
+        }
+        #endregion
+    }
 }

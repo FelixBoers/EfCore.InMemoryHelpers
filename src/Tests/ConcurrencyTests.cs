@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using ApprovalTests;
@@ -51,6 +52,29 @@ public class ConcurrencyTests : TestBase
             context.SaveChanges();
             Assert.NotEqual(firstTimestamp.GetGuid(), update.Timestamp.GetGuid());
         }
+    }
+    
+    [Fact]
+    public void ReusabilitySucceeds()
+    {
+        const string dbName = "MyDatabase";
+        const string value = "prop";
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>(dbName))
+        {
+            var entity = new TestEntity
+            {
+                Property = value
+            };
+            context.Add(entity);
+            context.SaveChanges();
+        }
+
+        TestEntity res;
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>(dbName))
+        {
+            res = context.TestEntities.First(e => e.Property == value);
+        }
+        Assert.NotNull(res);
     }
 
     [Fact]

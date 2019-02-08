@@ -7,8 +7,8 @@ namespace EfCore.InMemoryHelpers
 {
     public static class InMemoryContextBuilder
     {
-        private static HashSet<string> existingDatabases = new HashSet<string>();
-        
+        static HashSet<string> existingDatabases = new HashSet<string>();
+
         public static TContext Build<TContext>(bool enableSensitiveDataLogging = true)
             where TContext : DbContext
         {
@@ -23,7 +23,7 @@ namespace EfCore.InMemoryHelpers
             Guard.AgainstNull(nameof(builder), builder);
             return Build(builder, x => (TContext) Activator.CreateInstance(typeof(TContext), x));
         }
-        
+
         public static TContext Build<TContext>(string databaseName, bool enableSensitiveDataLogging = true)
             where TContext : DbContext
         {
@@ -37,10 +37,10 @@ namespace EfCore.InMemoryHelpers
         {
             return Build(builder, contextConstructor, Guid.NewGuid().ToString());
         }
-        
-        public static TContext Build<TContext>(DbContextOptionsBuilder builder, 
-            Func<DbContextOptions, TContext> contextConstructor, 
-            string databaseName, 
+
+        public static TContext Build<TContext>(DbContextOptionsBuilder builder,
+            Func<DbContextOptions, TContext> contextConstructor,
+            string databaseName,
             DatabaseReusability reuseOption = DatabaseReusability.Disabled)
             where TContext : DbContext
         {
@@ -50,16 +50,21 @@ namespace EfCore.InMemoryHelpers
             builder.ReplaceService<IDbContextDependencies, DbContextDependenciesEx>();
             var context = contextConstructor(builder.Options);
             var exists = existingDatabases.Contains(databaseName);
-            if (reuseOption != DatabaseReusability.Disabled && exists) return context;
+            if (reuseOption != DatabaseReusability.Disabled && exists)
+            {
+                return context;
+            }
             TrackDatabase(reuseOption, exists, databaseName);
             context.ResetValueGenerators();
             return context;
         }
 
-        private static void TrackDatabase(DatabaseReusability reuseOption, bool exists, string databaseName)
+        static void TrackDatabase(DatabaseReusability reuseOption, bool exists, string databaseName)
         {
-            if (reuseOption == DatabaseReusability.Active && !exists) existingDatabases.Add(databaseName);
+            if (reuseOption == DatabaseReusability.Active && !exists)
+            {
+                existingDatabases.Add(databaseName);
+            }
         }
-        
     }
 }

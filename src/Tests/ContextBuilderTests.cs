@@ -21,6 +21,22 @@ public class ContextBuilderTests : TestBase
             Assert.Single(item);
         }
     }
+    
+    [Fact]
+    public void GetInMemoryContextWithSpecifiedDbName()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>("MyDatabase"))
+        {
+            var entity = new TestEntity
+            {
+                Property = "prop"
+            };
+            context.Add(entity);
+            context.SaveChanges();
+            var item = context.TestEntities.ToList();
+            Assert.Single(item);
+        }
+    }
 
     public ContextBuilderTests(ITestOutputHelper output) :
         base(output)

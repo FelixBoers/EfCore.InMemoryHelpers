@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ApprovalTests" Version="3.0.20" />
+    <PackageReference Include="ApprovalTests" Version="3.0.21" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.2" />
     <PackageReference Include="MarkdownSnippets" Version="9.0.4" />
     <PackageReference Include="ObjectApproval" Version="6.0.0" />

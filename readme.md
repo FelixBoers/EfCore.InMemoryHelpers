@@ -1,3 +1,4 @@
+# No longer maintained
 # EfCore.InMemoryHelpers
 
 Provides a wrapper around the [EF Core In-Memory Database Provider](https://docs.microsoft.com/en-us/ef/core/providers/in-memory/). Specifically works around the following EF bugs.

@@ -27,9 +27,29 @@ public class UniqueIndexTests : TestBase
         }
     }
 
+    [Fact]
+    public void RespectsUniqueIndexOrder()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity1 = new TestEntityUnique {A = "a", B = "b"};
+            var entity2 = new TestEntityUnique {A = "b", B = "a"};
+            context.AddRange(entity1, entity2);
+            context.SaveChanges();
+        }
+    }
+
+
     public UniqueIndexTests(ITestOutputHelper output) :
         base(output)
     {
+    }
+
+    public class TestEntityUnique
+    {
+        public int Id { get; set; }
+        public string A { get; set; }
+        public string B { get; set; }
     }
 
     public class TestEntity
@@ -41,6 +61,7 @@ public class UniqueIndexTests : TestBase
     class TestDataContext : DbContext
     {
         public DbSet<TestEntity> TestEntities { get; set; }
+        public DbSet<TestEntityUnique> TestEntityUnique { get; set; }
 
         public TestDataContext(DbContextOptions options) : base(options)
         {
@@ -48,12 +69,16 @@ public class UniqueIndexTests : TestBase
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var entity = modelBuilder.Entity<TestEntity>();
-            entity.Property(b => b.Property)
+            var testEntity = modelBuilder.Entity<TestEntity>();
+            testEntity.Property(b => b.Property)
                 .IsRequired();
 
-            entity.HasIndex(u => u.Property)
+            testEntity.HasIndex(u => u.Property)
                 .IsUnique();
+
+            var testEntitySameTypes = modelBuilder.Entity<TestEntityUnique>();
+            testEntitySameTypes.HasIndex(u => new {u.A, u.B}).IsUnique();
+
         }
     }
 }

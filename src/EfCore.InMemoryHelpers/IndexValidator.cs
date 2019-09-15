@@ -56,8 +56,7 @@ static class IndexValidator
 
     static long GetHash(this IEnumerable<object> values)
     {
-        return values.Where(x => x != null)
-            .Sum(x => (long) x.GetHashCode());
+        return string.Join("/", values).GetHashCode();
     }
 
     static IEnumerable<(string name, object value)> GetProperties(this IIndex index, object entity)

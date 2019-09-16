@@ -1,5 +1,5 @@
 image: Visual Studio 2017
-version: 1.8.{build}
+version: 1.9.{build}
 
 platform: Any CPU
 configuration: Release
@@ -19,7 +19,7 @@ build:
 deploy:
   provider: NuGet
   api_key:
-    secure: MITJCVEmcj6Gut+nSQIcEXnYhh75shmj5yxWhRDgbSSdEhqhuqiQpLdsSj9w2Sd/
+    secure: KiwyUoq8wO9qQroD1fmKvz1BC66ZJdyLjuFnwBX49TLFOPAlGizs6hXDygCS5e63
   skip_symbols: false
   artifacts: nugets\**\*.nupkg
   on:

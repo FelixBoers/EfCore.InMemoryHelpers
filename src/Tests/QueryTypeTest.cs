@@ -1,10 +1,15 @@
-﻿using Xunit;
-using Xunit.Abstractions;
-using EfCore.InMemoryHelpers;
+﻿using EfCore.InMemoryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
+using Xunit.Abstractions;
 
 public class QueryTypeTest : TestBase
 {
+    public QueryTypeTest(ITestOutputHelper output)
+        :
+        base(output)
+    { }
+
     [Fact]
     public void WithQueryTypeShouldNotThrow()
     {
@@ -24,19 +29,20 @@ public class QueryTypeTest : TestBase
         public int Id { get; set; }
         public string Property { get; set; }
     }
+
     public class TestEntityCount
     {
         public string Property { get; set; }
         public int Count { get; set; }
     }
 
-    class TestDataContext : DbContext
+    private class TestDataContext : DbContext
     {
-        public DbSet<TestEntity> TestEntities { get; set; }
+        public TestDataContext(DbContextOptions options)
+            : base(options)
+        { }
 
-        public TestDataContext(DbContextOptions options) : base(options)
-        {
-        }
+        public DbSet<TestEntity> TestEntities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,10 +53,5 @@ public class QueryTypeTest : TestBase
             entity.Property(b => b.Property)
                 .IsRequired();
         }
-    }
-
-    public QueryTypeTest(ITestOutputHelper output) :
-        base(output)
-    {
     }
 }

@@ -1,11 +1,16 @@
-﻿using Xunit;
-using Xunit.Abstractions;
-using System.Linq;
+﻿using System.Linq;
 using EfCore.InMemoryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
+using Xunit.Abstractions;
 
 public class ContextBuilderTests : TestBase
 {
+    public ContextBuilderTests(ITestOutputHelper output)
+        :
+        base(output)
+    { }
+
     [Fact]
     public void GetInMemoryContext()
     {
@@ -21,7 +26,7 @@ public class ContextBuilderTests : TestBase
             Assert.Single(item);
         }
     }
-    
+
     [Fact]
     public void GetInMemoryContextWithSpecifiedDbName()
     {
@@ -38,24 +43,19 @@ public class ContextBuilderTests : TestBase
         }
     }
 
-    public ContextBuilderTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
-
     public class TestEntity
     {
         public int Id { get; set; }
         public string Property { get; set; }
     }
 
-    class TestDataContext : DbContext
+    private class TestDataContext : DbContext
     {
-        public DbSet<TestEntity> TestEntities { get; set; }
+        public TestDataContext(DbContextOptions options)
+            : base(options)
+        { }
 
-        public TestDataContext(DbContextOptions options) : base(options)
-        {
-        }
+        public DbSet<TestEntity> TestEntities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

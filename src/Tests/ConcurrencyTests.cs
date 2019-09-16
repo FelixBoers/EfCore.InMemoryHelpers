@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Linq;
-using Xunit;
-using Xunit.Abstractions;
 using ApprovalTests;
 using EfCore.InMemoryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
+using Xunit.Abstractions;
 
 public class ConcurrencyTests : TestBase
 {
+    public ConcurrencyTests(ITestOutputHelper output)
+        :
+        base(output)
+    { }
+
     [Fact]
     public void NullConflictThrows()
     {
@@ -27,6 +32,84 @@ public class ConcurrencyTests : TestBase
             context.Entry(update).Property("Property").IsModified = true;
             var exception = Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
             Approvals.Verify(exception.Message);
+        }
+    }
+
+    [Fact]
+    public void ReusabilitySucceeds()
+    {
+        const string dbName = "MyDatabase";
+        const string value = "prop";
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>(dbName))
+        {
+            var entity = new TestEntity
+            {
+                Property = value
+            };
+            context.Add(entity);
+            context.SaveChanges();
+        }
+
+        TestEntity res;
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>(dbName))
+        {
+            res = context.TestEntities.First(e => e.Property == value);
+        }
+
+        Assert.NotNull(res);
+    }
+
+    [Fact]
+    public void SetRowVersionToNullThrows()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity = new TestEntity
+            {
+                Property = "prop"
+            };
+            context.Add(entity);
+            context.SaveChanges();
+            entity.Timestamp = null;
+            var exception = Assert.Throws<Exception>(() => context.SaveChanges());
+            Approvals.Verify(exception.Message);
+        }
+    }
+
+    [Fact]
+    public void UpdateMultipleSameEntity()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity1 = new TestEntity
+            {
+                Property = "prop"
+            };
+            var entity2 = new TestEntity
+            {
+                Property = "prop"
+            };
+            context.AddRange(entity1, entity2);
+            context.SaveChanges();
+            entity1.Property = "Something new";
+            entity2.Property = "Something new";
+            context.SaveChanges();
+        }
+    }
+
+    [Fact]
+    public void UpdateSameEntity()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity = new TestEntity
+            {
+                Property = "prop"
+            };
+            context.Add(entity);
+            context.SaveChanges();
+            entity.Property = "Something new";
+            context.SaveChanges();
         }
     }
 
@@ -53,29 +136,6 @@ public class ConcurrencyTests : TestBase
             Assert.NotEqual(firstTimestamp.GetGuid(), update.Timestamp.GetGuid());
         }
     }
-    
-    [Fact]
-    public void ReusabilitySucceeds()
-    {
-        const string dbName = "MyDatabase";
-        const string value = "prop";
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>(dbName))
-        {
-            var entity = new TestEntity
-            {
-                Property = value
-            };
-            context.Add(entity);
-            context.SaveChanges();
-        }
-
-        TestEntity res;
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>(dbName))
-        {
-            res = context.TestEntities.First(e => e.Property == value);
-        }
-        Assert.NotNull(res);
-    }
 
     [Fact]
     public void ValueConflictThrows()
@@ -100,65 +160,6 @@ public class ConcurrencyTests : TestBase
         }
     }
 
-    [Fact]
-    public void SetRowVersionToNullThrows()
-    {
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
-        {
-            var entity = new TestEntity
-            {
-                Property = "prop"
-            };
-            context.Add(entity);
-            context.SaveChanges();
-            entity.Timestamp = null;
-            var exception = Assert.Throws<Exception>(() => context.SaveChanges());
-            Approvals.Verify(exception.Message);
-        }
-    }
-
-    [Fact]
-    public void UpdateSameEntity()
-    {
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
-        {
-            var entity = new TestEntity
-            {
-                Property = "prop"
-            };
-            context.Add(entity);
-            context.SaveChanges();
-            entity.Property = "Something new";
-            context.SaveChanges();
-        }
-    }
-
-    [Fact]
-    public void UpdateMultipleSameEntity()
-    {
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
-        {
-            var entity1 = new TestEntity
-            {
-                Property = "prop"
-            };
-            var entity2 = new TestEntity
-            {
-                Property = "prop"
-            };
-            context.AddRange(entity1, entity2);
-            context.SaveChanges();
-            entity1.Property = "Something new";
-            entity2.Property = "Something new";
-            context.SaveChanges();
-        }
-    }
-
-    public ConcurrencyTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
-
     public class TestEntity
     {
         public int Id { get; set; }
@@ -166,13 +167,13 @@ public class ConcurrencyTests : TestBase
         public byte[] Timestamp { get; set; }
     }
 
-    class TestDataContext : DbContext
+    private class TestDataContext : DbContext
     {
-        public DbSet<TestEntity> TestEntities { get; set; }
+        public TestDataContext(DbContextOptions options)
+            : base(options)
+        { }
 
-        public TestDataContext(DbContextOptions options) : base(options)
-        {
-        }
+        public DbSet<TestEntity> TestEntities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

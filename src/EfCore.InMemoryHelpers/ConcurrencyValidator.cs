@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-class ConcurrencyValidator
+internal class ConcurrencyValidator
 {
-    List<object> seen = new List<object>();
+    private readonly List<object> seen = new List<object>();
 
     public void ValidateIndexes(DbContext context)
     {
@@ -23,7 +23,7 @@ class ConcurrencyValidator
         }
     }
 
-    void Validate(Func<object, byte[]> getter, Action<object, byte[]> setter, List<object> objects)
+    private void Validate(Func<object, byte[]> getter, Action<object, byte[]> setter, List<object> objects)
     {
         byte[] rowVersion;
         var first = objects.First();

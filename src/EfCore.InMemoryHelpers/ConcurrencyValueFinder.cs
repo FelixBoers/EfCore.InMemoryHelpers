@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-static class ConcurrencyValueFinder
+internal static class ConcurrencyValueFinder
 {
     public static bool GetConcurrency(this IEntityType entityType, out Action<object, byte[]> setter, out Func<object, byte[]> getter)
     {
@@ -39,11 +39,13 @@ static class ConcurrencyValueFinder
             {
                 return (byte[]) clrValue;
             }
+
             var bytes = (byte[]) valueConverter.ConvertToProvider(clrValue);
             if (bytes.All(x => x == 0))
             {
                 return null;
             }
+
             return bytes;
         };
         return true;

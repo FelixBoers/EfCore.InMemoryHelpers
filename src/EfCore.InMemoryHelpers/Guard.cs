@@ -1,6 +1,6 @@
 using System;
 
-static class Guard
+internal static class Guard
 {
     public static void AgainstNull(string argumentName, object value)
     {

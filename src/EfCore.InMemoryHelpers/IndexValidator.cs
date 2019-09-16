@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 //TODO: remove when this is fixed https://github.com/aspnet/EntityFrameworkCore/issues/2166
-static class IndexValidator
+internal static class IndexValidator
 {
     public static void ValidateIndexes(this DbContext context)
     {
@@ -19,7 +19,7 @@ static class IndexValidator
         }
     }
 
-    static void ValidateEntities(this IIndex index, IEnumerable<object> entities)
+    private static void ValidateEntities(this IIndex index, IEnumerable<object> entities)
     {
         var dictionary = new Dictionary<long, List<object>>();
         foreach (var entity in entities)
@@ -30,6 +30,7 @@ static class IndexValidator
             {
                 continue;
             }
+
             var hash = values.GetHash();
 
             if (!dictionary.ContainsKey(hash))
@@ -39,7 +40,7 @@ static class IndexValidator
             }
 
             var builder = new StringBuilder($"Conflicting values for unique index. Entity: {entity.GetType().FullName},\r\nIndex Properties:\r\n");
-            foreach (var (name, value) in valueLookup)
+            foreach ((var name, var value) in valueLookup)
             {
                 builder.AppendLine($"    {name}='{value}'");
             }
@@ -48,18 +49,18 @@ static class IndexValidator
         }
     }
 
-    static IEnumerable<IIndex> UniqueIndices(this IEntityType entityType)
+    private static IEnumerable<IIndex> UniqueIndices(this IEntityType entityType)
     {
         return entityType.GetIndexes()
             .Where(x => x.IsUnique);
     }
 
-    static long GetHash(this IEnumerable<object> values)
+    private static long GetHash(this IEnumerable<object> values)
     {
         return string.Join("/", values).GetHashCode();
     }
 
-    static IEnumerable<(string name, object value)> GetProperties(this IIndex index, object entity)
+    private static IEnumerable<(string name, object value)> GetProperties(this IIndex index, object entity)
     {
         return index.Properties
             .Select(property => property.PropertyInfo)

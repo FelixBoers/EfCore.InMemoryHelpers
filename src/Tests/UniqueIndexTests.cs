@@ -1,12 +1,29 @@
 ﻿using System;
-using Xunit;
-using Xunit.Abstractions;
 using ApprovalTests;
 using EfCore.InMemoryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
+using Xunit.Abstractions;
 
 public class UniqueIndexTests : TestBase
 {
+    public UniqueIndexTests(ITestOutputHelper output)
+        :
+        base(output)
+    { }
+
+    [Fact]
+    public void RespectsUniqueIndexOrder()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity1 = new TestEntityUnique {A = "a", B = "b"};
+            var entity2 = new TestEntityUnique {A = "b", B = "a"};
+            context.AddRange(entity1, entity2);
+            context.SaveChanges();
+        }
+    }
+
     [Fact]
     public void UniqueIndexThrows()
     {
@@ -27,24 +44,6 @@ public class UniqueIndexTests : TestBase
         }
     }
 
-    [Fact]
-    public void RespectsUniqueIndexOrder()
-    {
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
-        {
-            var entity1 = new TestEntityUnique {A = "a", B = "b"};
-            var entity2 = new TestEntityUnique {A = "b", B = "a"};
-            context.AddRange(entity1, entity2);
-            context.SaveChanges();
-        }
-    }
-
-
-    public UniqueIndexTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
-
     public class TestEntityUnique
     {
         public int Id { get; set; }
@@ -58,14 +57,14 @@ public class UniqueIndexTests : TestBase
         public string Property { get; set; }
     }
 
-    class TestDataContext : DbContext
+    private class TestDataContext : DbContext
     {
+        public TestDataContext(DbContextOptions options)
+            : base(options)
+        { }
+
         public DbSet<TestEntity> TestEntities { get; set; }
         public DbSet<TestEntityUnique> TestEntityUnique { get; set; }
-
-        public TestDataContext(DbContextOptions options) : base(options)
-        {
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -78,7 +77,6 @@ public class UniqueIndexTests : TestBase
 
             var testEntitySameTypes = modelBuilder.Entity<TestEntityUnique>();
             testEntitySameTypes.HasIndex(u => new {u.A, u.B}).IsUnique();
-
         }
     }
 }

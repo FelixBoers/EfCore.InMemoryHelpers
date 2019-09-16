@@ -4,10 +4,10 @@ public class MyDataContext : DbContext
 {
     #region dataContextCtor
 
-    public MyDataContext(DbContextOptions options) :
+    public MyDataContext(DbContextOptions options)
+        :
         base(options)
-    {
-    }
+    { }
 
     #endregion
 }

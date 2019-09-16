@@ -1,13 +1,18 @@
 ﻿using System;
-using Xunit;
-using Xunit.Abstractions;
 using ApprovalTests;
 using EfCore.InMemoryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Xunit;
+using Xunit.Abstractions;
 
 public class ConcurrencyWithLongTests : TestBase
 {
+    public ConcurrencyWithLongTests(ITestOutputHelper output)
+        :
+        base(output)
+    { }
+
     [Fact]
     public void NullConflictThrows()
     {
@@ -26,7 +31,61 @@ public class ConcurrencyWithLongTests : TestBase
             };
             context.Entry(update).Property("Property").IsModified = true;
             var exception = Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
-            Approvals.Verify(exception.Message.Replace(entity.Timestamp.ToString(),""));
+            Approvals.Verify(exception.Message.Replace(entity.Timestamp.ToString(), ""));
+        }
+    }
+
+    [Fact]
+    public void SetRowVersionToZeroThrows()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity = new TestEntity
+            {
+                Property = "prop"
+            };
+            context.Add(entity);
+            context.SaveChanges();
+            entity.Timestamp = 0;
+            var exception = Assert.Throws<Exception>(() => context.SaveChanges());
+            Approvals.Verify(exception.Message);
+        }
+    }
+
+    [Fact]
+    public void UpdateMultipleSameEntity()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity1 = new TestEntity
+            {
+                Property = "prop"
+            };
+            var entity2 = new TestEntity
+            {
+                Property = "prop"
+            };
+            context.AddRange(entity1, entity2);
+            context.SaveChanges();
+            entity1.Property = "Something new";
+            entity2.Property = "Something new";
+            context.SaveChanges();
+        }
+    }
+
+    [Fact]
+    public void UpdateSameEntity()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity = new TestEntity
+            {
+                Property = "prop"
+            };
+            context.Add(entity);
+            context.SaveChanges();
+            entity.Property = "Something new";
+            context.SaveChanges();
         }
     }
 
@@ -73,67 +132,8 @@ public class ConcurrencyWithLongTests : TestBase
             };
             context.Entry(update).Property("Property").IsModified = true;
             var exception = Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
-            Approvals.Verify(exception.Message.Replace(entity.Timestamp.ToString(),""));
+            Approvals.Verify(exception.Message.Replace(entity.Timestamp.ToString(), ""));
         }
-    }
-
-    [Fact]
-    public void SetRowVersionToZeroThrows()
-    {
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
-        {
-            var entity = new TestEntity
-            {
-                Property = "prop"
-            };
-            context.Add(entity);
-            context.SaveChanges();
-            entity.Timestamp = 0;
-            var exception = Assert.Throws<Exception>(() => context.SaveChanges());
-            Approvals.Verify(exception.Message);
-        }
-    }
-
-    [Fact]
-    public void UpdateSameEntity()
-    {
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
-        {
-            var entity = new TestEntity
-            {
-                Property = "prop"
-            };
-            context.Add(entity);
-            context.SaveChanges();
-            entity.Property = "Something new";
-            context.SaveChanges();
-        }
-    }
-
-    [Fact]
-    public void UpdateMultipleSameEntity()
-    {
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
-        {
-            var entity1 = new TestEntity
-            {
-                Property = "prop"
-            };
-            var entity2 = new TestEntity
-            {
-                Property = "prop"
-            };
-            context.AddRange(entity1, entity2);
-            context.SaveChanges();
-            entity1.Property = "Something new";
-            entity2.Property = "Something new";
-            context.SaveChanges();
-        }
-    }
-
-    public ConcurrencyWithLongTests(ITestOutputHelper output) :
-        base(output)
-    {
     }
 
     public class TestEntity
@@ -143,13 +143,13 @@ public class ConcurrencyWithLongTests : TestBase
         public ulong Timestamp { get; set; }
     }
 
-    class TestDataContext : DbContext
+    private class TestDataContext : DbContext
     {
-        public DbSet<TestEntity> TestEntities { get; set; }
+        public TestDataContext(DbContextOptions options)
+            : base(options)
+        { }
 
-        public TestDataContext(DbContextOptions options) : base(options)
-        {
-        }
+        public DbSet<TestEntity> TestEntities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

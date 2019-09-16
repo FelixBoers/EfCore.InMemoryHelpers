@@ -1,11 +1,16 @@
-﻿using Xunit;
-using Xunit.Abstractions;
-using ApprovalTests;
+﻿using ApprovalTests;
 using EfCore.InMemoryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
+using Xunit.Abstractions;
 
 public class ConcurrencyWithStringTests : TestBase
 {
+    public ConcurrencyWithStringTests(ITestOutputHelper output)
+        :
+        base(output)
+    { }
+
     [Fact]
     public void NullConflictThrows()
     {
@@ -27,6 +32,70 @@ public class ConcurrencyWithStringTests : TestBase
             context.Entry(update).Property("Property").IsModified = true;
             var exception = Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
             Approvals.Verify(exception.Message);
+        }
+    }
+
+    [Fact]
+    public void SetConcurrencyTokenToNullThrows()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity = new TestEntity
+            {
+                Property = "prop",
+                ConcurrencyToken = "616e2ca1a52a4c57afbfe80ecc54125c"
+            };
+            context.Add(entity);
+            context.SaveChanges();
+            var update = new TestEntity
+            {
+                Id = entity.Id,
+                Property = "Something new",
+                ConcurrencyToken = null
+            };
+            context.Entry(update).Property("Property").IsModified = true;
+            var exception = Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
+            Approvals.Verify(exception.Message);
+        }
+    }
+
+    [Fact]
+    public void UpdateMultipleSameEntity()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity1 = new TestEntity
+            {
+                Property = "prop",
+                ConcurrencyToken = "3c615ac3734046bc8bf6fd58d979c1ae"
+            };
+            var entity2 = new TestEntity
+            {
+                Property = "prop",
+                ConcurrencyToken = "cc4c1ce921e6457b89d00c7c2c6de2a9"
+            };
+            context.AddRange(entity1, entity2);
+            context.SaveChanges();
+            entity1.Property = "Something new";
+            entity2.Property = "Something new";
+            context.SaveChanges();
+        }
+    }
+
+    [Fact]
+    public void UpdateSameEntity()
+    {
+        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+        {
+            var entity = new TestEntity
+            {
+                Property = "prop",
+                ConcurrencyToken = "28f4fc79da8f43b887d2eef4e82a2be5"
+            };
+            context.Add(entity);
+            context.SaveChanges();
+            entity.Property = "Something new";
+            context.SaveChanges();
         }
     }
 
@@ -79,75 +148,6 @@ public class ConcurrencyWithStringTests : TestBase
         }
     }
 
-    [Fact]
-    public void SetConcurrencyTokenToNullThrows()
-    {
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
-        {
-            var entity = new TestEntity
-            {
-                Property = "prop",
-                ConcurrencyToken = "616e2ca1a52a4c57afbfe80ecc54125c"
-            };
-            context.Add(entity);
-            context.SaveChanges();
-            var update = new TestEntity
-            {
-                Id = entity.Id,
-                Property = "Something new",
-                ConcurrencyToken = null
-            };
-            context.Entry(update).Property("Property").IsModified = true;
-            var exception = Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
-            Approvals.Verify(exception.Message);
-        }
-    }
-
-    [Fact]
-    public void UpdateSameEntity()
-    {
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
-        {
-            var entity = new TestEntity
-            {
-                Property = "prop",
-                ConcurrencyToken = "28f4fc79da8f43b887d2eef4e82a2be5"
-            };
-            context.Add(entity);
-            context.SaveChanges();
-            entity.Property = "Something new";
-            context.SaveChanges();
-        }
-    }
-
-    [Fact]
-    public void UpdateMultipleSameEntity()
-    {
-        using (var context = InMemoryContextBuilder.Build<TestDataContext>())
-        {
-            var entity1 = new TestEntity
-            {
-                Property = "prop",
-                ConcurrencyToken = "3c615ac3734046bc8bf6fd58d979c1ae"
-            };
-            var entity2 = new TestEntity
-            {
-                Property = "prop",
-                ConcurrencyToken = "cc4c1ce921e6457b89d00c7c2c6de2a9"
-            };
-            context.AddRange(entity1, entity2);
-            context.SaveChanges();
-            entity1.Property = "Something new";
-            entity2.Property = "Something new";
-            context.SaveChanges();
-        }
-    }
-
-    public ConcurrencyWithStringTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
-
     public class TestEntity
     {
         public int Id { get; set; }
@@ -155,18 +155,18 @@ public class ConcurrencyWithStringTests : TestBase
         public string ConcurrencyToken { get; set; }
     }
 
-    class TestDataContext : DbContext
+    private class TestDataContext : DbContext
     {
-        public DbSet<TestEntity> TestEntities { get; set; }
+        public TestDataContext(DbContextOptions options)
+            : base(options)
+        { }
 
-        public TestDataContext(DbContextOptions options) : base(options)
-        {
-        }
+        public DbSet<TestEntity> TestEntities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var entity = modelBuilder.Entity<TestEntity>();
-//            entity.HasKey(p => p.Id);
+            //            entity.HasKey(p => p.Id);
             entity.Property(p => p.ConcurrencyToken)
                 .IsConcurrencyToken();
         }

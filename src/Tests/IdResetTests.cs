@@ -1,11 +1,16 @@
-﻿using Xunit;
-using Xunit.Abstractions;
-using System.Linq;
+﻿using System.Linq;
 using EfCore.InMemoryHelpers;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
+using Xunit.Abstractions;
 
 public class IdResetTests : TestBase
 {
+    public IdResetTests(ITestOutputHelper output)
+        :
+        base(output)
+    { }
+
     [Fact]
     public void AssertIdIsReset()
     {
@@ -34,24 +39,19 @@ public class IdResetTests : TestBase
         }
     }
 
-    public IdResetTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
-
     public class TestEntity
     {
         public int Id { get; set; }
         public string Property { get; set; }
     }
 
-    class TestDataContext : DbContext
+    private class TestDataContext : DbContext
     {
-        public DbSet<TestEntity> TestEntities { get; set; }
+        public TestDataContext(DbContextOptions options)
+            : base(options)
+        { }
 
-        public TestDataContext(DbContextOptions options) : base(options)
-        {
-        }
+        public DbSet<TestEntity> TestEntities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

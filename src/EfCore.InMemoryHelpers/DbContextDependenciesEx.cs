@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
-class DbContextDependenciesEx : IDbContextDependencies
+internal class DbContextDependenciesEx : IDbContextDependencies
 {
-    DbContextDependencies inner;
+    private readonly DbContextDependencies inner;
 
     public DbContextDependenciesEx(ICurrentDbContext currentContext, IChangeDetector changeDetector, IDbSetSource setSource, IDbQuerySource querySource, IEntityFinderSource entityFinderSource, IEntityGraphAttacher entityGraphAttacher, IModel model, IAsyncQueryProvider queryProvider, IStateManager stateManager, IDiagnosticsLogger<DbLoggerCategory.Update> updateLogger, IDiagnosticsLogger<DbLoggerCategory.Infrastructure> infrastructureLogger)
     {

@@ -7,7 +7,7 @@ namespace EfCore.InMemoryHelpers
 {
     public static class InMemoryContextBuilder
     {
-        static HashSet<string> existingDatabases = new HashSet<string>();
+        private static readonly HashSet<string> existingDatabases = new HashSet<string>();
 
         public static TContext Build<TContext>(bool enableSensitiveDataLogging = true)
             where TContext : DbContext
@@ -38,10 +38,12 @@ namespace EfCore.InMemoryHelpers
             return Build(builder, contextConstructor, Guid.NewGuid().ToString());
         }
 
-        public static TContext Build<TContext>(DbContextOptionsBuilder builder,
+        public static TContext Build<TContext>(
+            DbContextOptionsBuilder builder,
             Func<DbContextOptions, TContext> contextConstructor,
             string databaseName,
-            DatabaseReusability reuseOption = DatabaseReusability.Disabled)
+            DatabaseReusability reuseOption = DatabaseReusability.Disabled
+        )
             where TContext : DbContext
         {
             Guard.AgainstNull(nameof(builder), builder);
@@ -54,12 +56,13 @@ namespace EfCore.InMemoryHelpers
             {
                 return context;
             }
+
             TrackDatabase(reuseOption, exists, databaseName);
             context.ResetValueGenerators();
             return context;
         }
 
-        static void TrackDatabase(DatabaseReusability reuseOption, bool exists, string databaseName)
+        private static void TrackDatabase(DatabaseReusability reuseOption, bool exists, string databaseName)
         {
             if (reuseOption == DatabaseReusability.Active && !exists)
             {

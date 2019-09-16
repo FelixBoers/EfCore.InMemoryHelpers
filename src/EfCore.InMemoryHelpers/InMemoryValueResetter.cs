@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 //TODO: remove when this is fixed https://github.com/aspnet/EntityFrameworkCore/issues/6872
-static class InMemoryValueResetter
+internal static class InMemoryValueResetter
 {
     public static void ResetValueGenerators(this DbContext context)
     {
@@ -16,21 +16,24 @@ static class InMemoryValueResetter
         foreach (var keyProperty in context.Model.GetEntityTypes()
             .Where(x => !x.IsQueryType)
             .Select(e => e.FindPrimaryKey().Properties[0])
-            .Where(p => p.ClrType == typeof(int)
-                        && p.ValueGenerated == ValueGenerated.OnAdd))
+            .Where(
+                p => p.ClrType == typeof(int)
+                    && p.ValueGenerated == ValueGenerated.OnAdd
+            ))
         {
             var generator = (ResettableValueGenerator) cache.GetOrAdd(
                 keyProperty,
                 keyProperty.DeclaringEntityType,
-                (p, e) => new ResettableValueGenerator());
+                (p, e) => new ResettableValueGenerator()
+            );
 
             generator.Reset();
         }
     }
 
-    class ResettableValueGenerator : ValueGenerator<int>
+    private class ResettableValueGenerator : ValueGenerator<int>
     {
-        int current;
+        private int current;
 
         public override bool GeneratesTemporaryValues => false;
 

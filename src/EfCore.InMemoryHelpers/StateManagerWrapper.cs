@@ -11,12 +11,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
+
 // ReSharper disable IdentifierTypo
 
-class StateManagerWrapper : IStateManager
+internal class StateManagerWrapper : IStateManager
 {
-    IStateManager inner;
-    ConcurrencyValidator concurrencyValidator;
+    private readonly IStateManager inner;
+    private readonly ConcurrencyValidator concurrencyValidator;
 
     public StateManagerWrapper(IStateManager stateManager)
     {
@@ -100,7 +101,7 @@ class StateManagerWrapper : IStateManager
 
     public void RecordReferencedUntrackedEntity(object referencedEntity, INavigation navigation, InternalEntityEntry referencedFromEntry)
     {
-        inner.RecordReferencedUntrackedEntity(referencedEntity,navigation, referencedFromEntry);
+        inner.RecordReferencedUntrackedEntity(referencedEntity, navigation, referencedFromEntry);
     }
 
     public IEnumerable<Tuple<INavigation, InternalEntityEntry>> GetRecordedReferrers(object referencedEntity, bool clear)
@@ -160,7 +161,7 @@ class StateManagerWrapper : IStateManager
 
     public IEntityFinder CreateEntityFinder(IEntityType entityType)
     {
-        return   inner.CreateEntityFinder(entityType);
+        return inner.CreateEntityFinder(entityType);
     }
 
     public TrackingQueryMode GetTrackingQueryMode(IEntityType entityType)
@@ -192,7 +193,7 @@ class StateManagerWrapper : IStateManager
 
     public int ChangedCount
     {
-        get =>  inner.ChangedCount;
+        get => inner.ChangedCount;
         set => inner.ChangedCount = value;
     }
 
@@ -202,9 +203,10 @@ class StateManagerWrapper : IStateManager
     public IEntityMaterializerSource EntityMaterializerSource => inner.EntityMaterializerSource;
     public bool SensitiveLoggingEnabled => inner.SensitiveLoggingEnabled;
     public IDiagnosticsLogger<DbLoggerCategory.Update> UpdateLogger => inner.UpdateLogger;
+
     public event EventHandler<EntityTrackedEventArgs> Tracked
     {
-        add => inner.Tracked+=value;
+        add => inner.Tracked += value;
         remove => inner.Tracked -= value;
     }
 
@@ -213,5 +215,4 @@ class StateManagerWrapper : IStateManager
         add => inner.StateChanged += value;
         remove => inner.StateChanged -= value;
     }
-
 }

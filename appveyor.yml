@@ -25,12 +25,8 @@ build:
   project: EfCore.InMemoryHelpers.sln
 
 deploy:
-  provider: NuGet
-  api_key:
-    secure: eePIAkQ9zcszMCrpgPkk5LcT0AW7SM/RXVTFem5CA7fuoJ30VQwJMXPxa1w4RiRK
-  skip_symbols: false
-  on:
-    branch: master
+  provider: Environment
+  name: NuGet
 
 artifacts:
   - path: nugets\**\*.nupkg

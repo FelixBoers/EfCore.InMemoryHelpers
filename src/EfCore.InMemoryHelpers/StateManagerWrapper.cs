@@ -12,8 +12,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
 
-// ReSharper disable IdentifierTypo
-
 namespace EfCore.InMemoryHelpers
 {
     internal class StateManagerWrapper : IStateManager

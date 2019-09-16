@@ -1,4 +1,13 @@
-# EfCore.InMemoryHelpers [![Inactively Maintained](https://img.shields.io/badge/Maintenance%20Level-Inactively%20Maintained-yellowgreen.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
+<!--
+This file was generate by MarkdownSnippets.
+Source File: /readme.source.md
+To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/MarkdownSnippets#githubmarkdownsnippets) or using the api (https://github.com/SimonCropp/MarkdownSnippets#running-as-a-unit-test).
+-->
+# EfCore.InMemoryHelpers 
+
+[![Actively Maintained](https://img.shields.io/badge/Maintenance%20Level-Actively%20Maintained-green.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
+[![Build status](https://ci.appveyor.com/api/projects/status/f1kk9pthruopfac9?svg=true)](https://ci.appveyor.com/project/flex87/efcore-inmemoryhelpers)
+[![NuGet Status](http://img.shields.io/nuget/v/EfCore.InMemoryHelpers.svg?longCache=true&style=flat)](https://www.nuget.org/packages/EfCore.InMemoryHelpers/)
 
 Provides a wrapper around the [EF Core In-Memory Database Provider](https://docs.microsoft.com/en-us/ef/core/providers/in-memory/). Specifically works around the following EF bugs.
 
@@ -12,7 +21,7 @@ Provides a wrapper around the [EF Core In-Memory Database Provider](https://docs
 **This project is supported by the community via [Patreon sponsorship](https://www.patreon.com/join/simoncropp). If you are using this project to deliver business value or build commercial software it is expected that you will provide support [via Patreon](https://www.patreon.com/join/simoncropp).**
 
 
-## NuGet [![NuGet Status](http://img.shields.io/nuget/v/EfCore.InMemoryHelpers.svg?longCache=true&style=flat)](https://www.nuget.org/packages/EfCore.InMemoryHelpers/)
+## NuGet 
 
 https://nuget.org/packages/EfCore.InMemoryHelpers/
 
@@ -35,7 +44,7 @@ using (var context = InMemoryContextBuilder.Build<MyDataContext>())
     context.SaveChanges();
 }
 ```
-<sup>[snippet source](/src/Tests/Snippets/Sample.cs#L8-L18)</sup>
+<sup>[snippet source](/test/EfCore.InMemoryHelpers.Test/Snippets/Sample.cs#L9-L21)</sup>
 <!-- endsnippet -->
 
 A custom `DbContextOptionsBuilder` can be passed in:
@@ -53,19 +62,19 @@ using (var context = InMemoryContextBuilder.Build<MyDataContext>(builder))
     context.SaveChanges();
 }
 ```
-<sup>[snippet source](/src/Tests/Snippets/Sample.cs#L23-L34)</sup>
+<sup>[snippet source](/test/EfCore.InMemoryHelpers.Test/Snippets/Sample.cs#L26-L39)</sup>
 <!-- endsnippet -->
 
 Both the above usages assume that the target context has a public constructor that accepts a `DbContextOptions`.
 
 <!-- snippet: dataContextCtor -->
 ```cs
-public MyDataContext(DbContextOptions options) :
+public MyDataContext(DbContextOptions options)
+    :
     base(options)
-{
-}
+{ }
 ```
-<sup>[snippet source](/src/Tests/Snippets/MyDataContext.cs#L5-L12)</sup>
+<sup>[snippet source](/test/EfCore.InMemoryHelpers.Test/Snippets/MyDataContext.cs#L7-L14)</sup>
 <!-- endsnippet -->
 
 If this is not the case a custom context constructor can be passed in:
@@ -83,7 +92,7 @@ using (var context = InMemoryContextBuilder.Build(builder, options => new MyData
     context.SaveChanges();
 }
 ```
-<sup>[snippet source](/src/Tests/Snippets/Sample.cs#L39-L50)</sup>
+<sup>[snippet source](/test/EfCore.InMemoryHelpers.Test/Snippets/Sample.cs#L44-L57)</sup>
 <!-- endsnippet -->
 
 

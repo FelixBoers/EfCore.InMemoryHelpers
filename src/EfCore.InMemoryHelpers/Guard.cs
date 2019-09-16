@@ -1,12 +1,15 @@
 using System;
 
-internal static class Guard
+namespace EfCore.InMemoryHelpers
 {
-    public static void AgainstNull(string argumentName, object value)
+    internal static class Guard
     {
-        if (value == null)
+        public static void AgainstNull(string argumentName, object value)
         {
-            throw new ArgumentNullException(argumentName);
+            if (value == null)
+            {
+                throw new ArgumentNullException(argumentName);
+            }
         }
     }
 }

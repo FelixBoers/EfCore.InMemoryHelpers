@@ -15,7 +15,10 @@
     <PackageReference Include="NUnit" Version="3.11.0" />
     <PackageReference Include="Xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <ProjectReference Include="..\EfCore.InMemoryHelpers\EfCore.InMemoryHelpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EfCore.InMemoryHelpers\EfCore.InMemoryHelpers.csproj" />
   </ItemGroup>
 
 

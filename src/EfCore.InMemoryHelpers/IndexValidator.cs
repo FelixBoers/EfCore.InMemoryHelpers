@@ -6,64 +6,67 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 //TODO: remove when this is fixed https://github.com/aspnet/EntityFrameworkCore/issues/2166
-internal static class IndexValidator
+namespace EfCore.InMemoryHelpers
 {
-    public static void ValidateIndexes(this DbContext context)
+    internal static class IndexValidator
     {
-        foreach (var entry in context.ChangeTracker.Entries().GroupBy(x => x.Metadata))
+        public static void ValidateIndexes(this DbContext context)
         {
-            foreach (var index in entry.Key.UniqueIndices())
+            foreach (var entry in context.ChangeTracker.Entries().GroupBy(x => x.Metadata))
             {
-                index.ValidateEntities(entry.Select(x => x.Entity));
+                foreach (var index in entry.Key.UniqueIndices())
+                {
+                    index.ValidateEntities(entry.Select(x => x.Entity));
+                }
             }
         }
-    }
 
-    private static void ValidateEntities(this IIndex index, IEnumerable<object> entities)
-    {
-        var dictionary = new Dictionary<long, List<object>>();
-        foreach (var entity in entities)
+        private static void ValidateEntities(this IIndex index, IEnumerable<object> entities)
         {
-            var valueLookup = index.GetProperties(entity).ToList();
-            var values = valueLookup.Select(x => x.value).ToList();
-            if (values.Any(x => x == null))
+            var dictionary = new Dictionary<long, List<object>>();
+            foreach (var entity in entities)
             {
-                continue;
+                var valueLookup = index.GetProperties(entity).ToList();
+                var values = valueLookup.Select(x => x.value).ToList();
+                if (values.Any(x => x == null))
+                {
+                    continue;
+                }
+
+                var hash = values.GetHash();
+
+                if (!dictionary.ContainsKey(hash))
+                {
+                    dictionary[hash] = values;
+                    continue;
+                }
+
+                var builder = new StringBuilder($"Conflicting values for unique index. Entity: {entity.GetType().FullName},\r\nIndex Properties:\r\n");
+                foreach ((var name, var value) in valueLookup)
+                {
+                    builder.AppendLine($"    {name}='{value}'");
+                }
+
+                throw new Exception(builder.ToString());
             }
-
-            var hash = values.GetHash();
-
-            if (!dictionary.ContainsKey(hash))
-            {
-                dictionary[hash] = values;
-                continue;
-            }
-
-            var builder = new StringBuilder($"Conflicting values for unique index. Entity: {entity.GetType().FullName},\r\nIndex Properties:\r\n");
-            foreach ((var name, var value) in valueLookup)
-            {
-                builder.AppendLine($"    {name}='{value}'");
-            }
-
-            throw new Exception(builder.ToString());
         }
-    }
 
-    private static IEnumerable<IIndex> UniqueIndices(this IEntityType entityType)
-    {
-        return entityType.GetIndexes()
-            .Where(x => x.IsUnique);
-    }
+        private static IEnumerable<IIndex> UniqueIndices(this IEntityType entityType)
+        {
+            return entityType.GetIndexes()
+                .Where(x => x.IsUnique);
+        }
 
-    private static long GetHash(this IEnumerable<object> values)
-    {
-        return string.Join("/", values).GetHashCode();
-    }
+        private static long GetHash(this IEnumerable<object> values)
+        {
+            return string.Join("/", values).GetHashCode();
+        }
 
-    private static IEnumerable<(string name, object value)> GetProperties(this IIndex index, object entity)
-    {
-        return index.Properties
-            .Select(property => property.PropertyInfo)
-            .Select(info => (info.Name, info.GetValue(entity)));
+        private static IEnumerable<(string name, object value)> GetProperties(this IIndex index, object entity)
+        {
+            return index.Properties
+                .Select(property => property.PropertyInfo)
+                .Select(info => (info.Name, info.GetValue(entity)));
+        }
     }
 }

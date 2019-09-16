@@ -7,38 +7,41 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 //TODO: remove when this is fixed https://github.com/aspnet/EntityFrameworkCore/issues/6872
-internal static class InMemoryValueResetter
+namespace EfCore.InMemoryHelpers
 {
-    public static void ResetValueGenerators(this DbContext context)
+    internal static class InMemoryValueResetter
     {
-        var cache = context.GetService<IValueGeneratorCache>();
-
-        foreach (var keyProperty in context.Model.GetEntityTypes()
-            .Where(x => !x.IsQueryType)
-            .Select(e => e.FindPrimaryKey().Properties[0])
-            .Where(
-                p => p.ClrType == typeof(int)
-                    && p.ValueGenerated == ValueGenerated.OnAdd
-            ))
+        public static void ResetValueGenerators(this DbContext context)
         {
-            var generator = (ResettableValueGenerator) cache.GetOrAdd(
-                keyProperty,
-                keyProperty.DeclaringEntityType,
-                (p, e) => new ResettableValueGenerator()
-            );
+            var cache = context.GetService<IValueGeneratorCache>();
 
-            generator.Reset();
+            foreach (var keyProperty in context.Model.GetEntityTypes()
+                .Where(x => !x.IsQueryType)
+                .Select(e => e.FindPrimaryKey().Properties[0])
+                .Where(
+                    p => p.ClrType == typeof(int)
+                        && p.ValueGenerated == ValueGenerated.OnAdd
+                ))
+            {
+                var generator = (ResettableValueGenerator) cache.GetOrAdd(
+                    keyProperty,
+                    keyProperty.DeclaringEntityType,
+                    (p, e) => new ResettableValueGenerator()
+                );
+
+                generator.Reset();
+            }
         }
-    }
 
-    private class ResettableValueGenerator : ValueGenerator<int>
-    {
-        private int current;
+        private class ResettableValueGenerator : ValueGenerator<int>
+        {
+            private int current;
 
-        public override bool GeneratesTemporaryValues => false;
+            public override bool GeneratesTemporaryValues => false;
 
-        public override int Next(EntityEntry entry) => Interlocked.Increment(ref current);
+            public override int Next(EntityEntry entry) => Interlocked.Increment(ref current);
 
-        public void Reset() => current = 0;
+            public void Reset() => current = 0;
+        }
     }
 }

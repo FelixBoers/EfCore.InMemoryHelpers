@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
-    <NoWarn>CS1591</NoWarn>
     <Version>1.8.0</Version>
+    <NoWarn>CS1591</NoWarn>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)). All rights reserved</Copyright>
     <PackageTags>EntityFrameworkCore, EntityFramework, InMemory</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/FelixBoers/EfCore.InMemoryHelpers/master/icon.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/FelixBoers/EfCore.InMemoryHelpers</PackageProjectUrl>
-    <PackageOutputPath>..\..\nugets</PackageOutputPath>
+    <PackageOutputPath>../../nugets</PackageOutputPath>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>../key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>../../key.snk</AssemblyOriginatorKeyFile>
     <RepositoryUrl>https://github.com/FelixBoers/EfCore.InMemoryHelpers</RepositoryUrl>
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>

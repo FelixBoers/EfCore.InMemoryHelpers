@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Threading;
 
-internal static class RowVersion
+namespace EfCore.InMemoryHelpers
 {
-    private static long counter;
-
-    public static Guid GetGuid(this byte[] rowVersion)
+    internal static class RowVersion
     {
-        return new Guid(rowVersion);
-    }
+        private static long counter;
 
-    public static string GetString(this byte[] rowVersion)
-    {
-        return new Guid(rowVersion).ToString();
-    }
+        public static Guid GetGuid(this byte[] rowVersion)
+        {
+            return new Guid(rowVersion);
+        }
 
-    public static byte[] New()
-    {
-        return Guid.NewGuid().ToByteArray();
-    }
+        public static string GetString(this byte[] rowVersion)
+        {
+            return new Guid(rowVersion).ToString();
+        }
 
-    public static ulong NewLong()
-    {
-        return (ulong) Interlocked.Increment(ref counter);
+        public static byte[] New()
+        {
+            return Guid.NewGuid().ToByteArray();
+        }
+
+        public static ulong NewLong()
+        {
+            return (ulong) Interlocked.Increment(ref counter);
+        }
     }
 }

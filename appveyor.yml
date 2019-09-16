@@ -26,8 +26,9 @@ build:
 
 deploy:
   provider: NuGet
+  api_key:
+    secure: eePIAkQ9zcszMCrpgPkk5LcT0AW7SM/RXVTFem5CA7fuoJ30VQwJMXPxa1w4RiRK
   skip_symbols: false
-  artifacts: nugets\**\*.nupkg
   on:
     branch: master
 

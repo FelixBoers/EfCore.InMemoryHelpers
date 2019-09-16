@@ -12,7 +12,7 @@ namespace EfCore.InMemoryHelpers.Test
             base(output)
         { }
 
-        [Fact]
+        [Fact(Skip = "Flaky. See: #69 (https://github.com/FelixBoers/EfCore.InMemoryHelpers/issues/69)")]
         public void GetInMemoryContext()
         {
             using (var context = InMemoryContextBuilder.Build<TestDataContext>())

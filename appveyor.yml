@@ -4,6 +4,14 @@ version: 1.9.{build}
 platform: Any CPU
 configuration: Release
 
+skip_commits:
+  files:
+    - test/*
+    - '**/*.md'
+    - '**/*.txt'
+    - '.gitignore'
+    - 'appveyor.yml'
+
 dotnet_csproj:
   patch: true
   file: 'Directory.Build.props'

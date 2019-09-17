@@ -30,5 +30,11 @@ deploy:
   on:
     branch: master
 
+deploy:
+  provider: Environment
+  name: GitHub
+  on:
+    branch: master
+
 artifacts:
   - path: nugets\**\*.nupkg

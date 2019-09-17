@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="ApprovalTests" Version="3.0.22" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.6" />
     <PackageReference Include="MarkdownSnippets" Version="9.1.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="ObjectApproval" Version="8.0.3" />

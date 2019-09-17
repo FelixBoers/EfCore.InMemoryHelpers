@@ -4,19 +4,6 @@ version: 1.9.{build}
 platform: Any CPU
 configuration: Release
 
-skip_commits:
-  files:
-    - test/*
-    - '**/*.md'
-    - '**/*.txt'
-    - '.gitignore'
-    - 'appveyor.yml'
-
-dotnet_csproj:
-  patch: true
-  file: 'Directory.Build.props'
-  version: '{version}'
-
 before_build:
   - ps: dotnet restore
 
@@ -24,16 +11,31 @@ build:
   parallel: true
   project: EfCore.InMemoryHelpers.sln
 
-deploy:
-  - provider: Environment
-    name: NuGet
-    on:
-      branch: master
+for:
+  - branches:
+      only:
+        - master
 
-  - provider: Environment
-    name: GitHub
-    on:
-      branch: master
+    dotnet_csproj:
+      patch: true
+      file: 'Directory.Build.props'
+      version: '{version}'
 
-artifacts:
-  - path: nugets\**\*.nupkg
+    skip_commits:
+      files:
+        - 'test/**/*'
+        - '**/*.md'
+        - '**/*.txt'
+        - '.gitignore'
+        - 'appveyor.yml'
+
+    artifacts:
+      - path: nugets\**\*.nupkg
+
+    deploy:
+      - provider: Environment
+        name: NuGet
+
+      - provider: Environment
+        name: GitHub
+

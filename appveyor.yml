@@ -28,6 +28,7 @@ for:
         - 'test/**/*'
         - '**/*.md'
         - '**/*.txt'
+        - '.github/**/*'
         - '.gitignore'
         - 'appveyor.yml'
 

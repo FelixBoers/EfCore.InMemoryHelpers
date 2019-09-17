@@ -27,6 +27,8 @@ build:
 deploy:
   provider: Environment
   name: NuGet
+  on:
+    branch: master
 
 artifacts:
   - path: nugets\**\*.nupkg

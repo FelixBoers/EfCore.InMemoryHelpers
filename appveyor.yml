@@ -4,6 +4,8 @@ version: 1.9.{build}
 platform: Any CPU
 configuration: Release
 
+skip_tags: true
+
 before_build:
   - ps: dotnet restore
 

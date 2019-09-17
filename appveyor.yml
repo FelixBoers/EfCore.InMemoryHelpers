@@ -25,16 +25,15 @@ build:
   project: EfCore.InMemoryHelpers.sln
 
 deploy:
-  provider: Environment
-  name: NuGet
-  on:
-    branch: master
+  - provider: Environment
+    name: NuGet
+    on:
+      branch: master
 
-deploy:
-  provider: Environment
-  name: GitHub
-  on:
-    branch: master
+  - provider: Environment
+    name: GitHub
+    on:
+      branch: master
 
 artifacts:
   - path: nugets\**\*.nupkg

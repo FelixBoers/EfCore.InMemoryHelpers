@@ -8,6 +8,7 @@ To change this file edit the source file and then re-run the generation using ei
 [![Actively Maintained](https://img.shields.io/badge/Maintenance%20Level-Actively%20Maintained-green.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
 [![Build status](https://ci.appveyor.com/api/projects/status/f1kk9pthruopfac9?svg=true)](https://ci.appveyor.com/project/flex87/efcore-inmemoryhelpers)
 [![NuGet Status](http://img.shields.io/nuget/v/EfCore.InMemoryHelpers.svg?longCache=true&style=flat)](https://www.nuget.org/packages/EfCore.InMemoryHelpers/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/FelixBoers/EfCore.InMemoryHelpers/blob/master/license.txt)
 
 Provides a wrapper around the [EF Core In-Memory Database Provider](https://docs.microsoft.com/en-us/ef/core/providers/in-memory/). Specifically works around the following EF bugs.
 

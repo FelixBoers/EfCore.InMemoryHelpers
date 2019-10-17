@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,7 +12,7 @@ namespace EfCore.InMemoryHelpers.Test
             base(output)
         { }
 
-        [Fact(Skip = "Flaky. See: #69 (https://github.com/FelixBoers/EfCore.InMemoryHelpers/issues/69)")]
+        [Fact]
         public void GetInMemoryContext()
         {
             using (var context = InMemoryContextBuilder.Build<TestDataContext>())
@@ -47,6 +47,7 @@ namespace EfCore.InMemoryHelpers.Test
         public class TestEntity
         {
             public int Id { get; set; }
+            
             public string Property { get; set; }
         }
 
@@ -61,6 +62,11 @@ namespace EfCore.InMemoryHelpers.Test
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 var entity = modelBuilder.Entity<TestEntity>();
+                entity.HasKey(p => p.Id);
+
+                entity.Property(p => p.Id)
+                    .ValueGeneratedOnAdd();
+
                 entity.Property(b => b.Property)
                     .IsRequired();
             }

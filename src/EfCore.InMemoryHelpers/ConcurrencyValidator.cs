@@ -42,17 +42,12 @@ namespace EfCore.InMemoryHelpers
             //If not seen
             else
             {
-                if (version != null)
-                {
-                    throw new Exception("The first save must have a null RowVersion");
-                }
-
                 rowVersion = RowVersion.New();
                 setter(first, rowVersion);
                 seen.Add(first);
             }
 
-            foreach (var o in objects.Skip(1))
+            foreach (var o in objects)
             {
                 var bytes = getter(o);
 

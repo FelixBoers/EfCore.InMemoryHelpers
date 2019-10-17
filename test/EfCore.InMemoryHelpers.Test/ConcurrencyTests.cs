@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
-using ApprovalTests;
+﻿using ApprovalTests;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,14 +17,19 @@ namespace EfCore.InMemoryHelpers.Test
         [Fact]
         public void NullConflictThrows()
         {
+            var entity = new TestEntity
+            {
+                Property = "prop"
+            };
+
             using (var context = InMemoryContextBuilder.Build<TestDataContext>())
             {
-                var entity = new TestEntity
-                {
-                    Property = "prop"
-                };
                 context.Add(entity);
                 context.SaveChanges();
+            }
+
+            using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+            {
                 var update = new TestEntity
                 {
                     Id = entity.Id,
@@ -125,36 +130,37 @@ namespace EfCore.InMemoryHelpers.Test
                 };
                 context.Add(entity);
                 context.SaveChanges();
-                var firstTimestamp = entity.Timestamp;
-                var update = new TestEntity
-                {
-                    Id = entity.Id,
-                    Property = "Something new",
-                    Timestamp = firstTimestamp
-                };
-                context.Entry(update).Property("Property").IsModified = true;
+                var firstTimestamp = entity.Timestamp.GetGuid();
+                entity.Property = "Something new";
+
                 context.SaveChanges();
-                Assert.NotEqual(firstTimestamp.GetGuid(), update.Timestamp.GetGuid());
+                Assert.NotEqual(firstTimestamp, entity.Timestamp.GetGuid());
             }
         }
 
         [Fact]
         public void ValueConflictThrows()
         {
+            var entity = new TestEntity
+            {
+                Property = "prop"
+            };
+
             using (var context = InMemoryContextBuilder.Build<TestDataContext>())
             {
-                var entity = new TestEntity
-                {
-                    Property = "prop"
-                };
                 context.Add(entity);
                 context.SaveChanges();
+            }
+
+            using (var context = InMemoryContextBuilder.Build<TestDataContext>())
+            {
                 var update = new TestEntity
                 {
                     Id = entity.Id,
                     Property = "Something new",
                     Timestamp = RowVersion.New()
                 };
+                context.Attach(update);
                 context.Entry(update).Property("Property").IsModified = true;
                 var exception = Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
                 Approvals.Verify(exception.Message);
@@ -164,7 +170,9 @@ namespace EfCore.InMemoryHelpers.Test
         public class TestEntity
         {
             public int Id { get; set; }
+            
             public string Property { get; set; }
+            
             public byte[] Timestamp { get; set; }
         }
 
@@ -179,6 +187,11 @@ namespace EfCore.InMemoryHelpers.Test
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 var entity = modelBuilder.Entity<TestEntity>();
+                entity.HasKey(p => p.Id);
+
+                entity.Property(p => p.Id)
+                 .ValueGeneratedOnAdd();
+
                 entity.Property(p => p.Timestamp)
                     .IsRowVersion();
             }

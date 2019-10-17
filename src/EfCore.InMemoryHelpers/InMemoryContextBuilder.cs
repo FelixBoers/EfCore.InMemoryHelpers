@@ -58,7 +58,6 @@ namespace EfCore.InMemoryHelpers
             }
 
             TrackDatabase(reuseOption, exists, databaseName);
-            context.ResetValueGenerators();
             return context;
         }
 

@@ -28,13 +28,15 @@ namespace EfCore.InMemoryHelpers.Test
         public class TestEntity
         {
             public int Id { get; set; }
+            
             public string Property { get; set; }
         }
 
         public class TestEntityCount
         {
-            public string Property { get; set; }
             public int Count { get; set; }
+            
+            public string Property { get; set; }
         }
 
         private class TestDataContext : DbContext
@@ -48,9 +50,13 @@ namespace EfCore.InMemoryHelpers.Test
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 modelBuilder
-                    .Query<TestEntityCount>().ToView("View_BlogPostCounts")
-                    .Property(v => v.Property).HasColumnName("Property");
+                    .Entity<TestEntityCount>()
+                    .HasNoKey()
+                    .ToView("View_BlogPostCounts")
+                    .Property(v => v.Property)
+                    .HasColumnName("Property");
                 var entity = modelBuilder.Entity<TestEntity>();
+                entity.HasKey(e => e.Id);
                 entity.Property(b => b.Property)
                     .IsRequired();
             }

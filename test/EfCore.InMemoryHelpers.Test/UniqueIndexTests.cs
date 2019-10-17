@@ -1,6 +1,6 @@
-﻿using System;
-using ApprovalTests;
+﻿using ApprovalTests;
 using Microsoft.EntityFrameworkCore;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,8 +18,8 @@ namespace EfCore.InMemoryHelpers.Test
         {
             using (var context = InMemoryContextBuilder.Build<TestDataContext>())
             {
-                var entity1 = new TestEntityUnique {A = "a", B = "b"};
-                var entity2 = new TestEntityUnique {A = "b", B = "a"};
+                var entity1 = new TestEntityUnique { A = "a", B = "b" };
+                var entity2 = new TestEntityUnique { A = "b", B = "a" };
                 context.AddRange(entity1, entity2);
                 context.SaveChanges();
             }
@@ -45,17 +45,20 @@ namespace EfCore.InMemoryHelpers.Test
             }
         }
 
-        public class TestEntityUnique
-        {
-            public int Id { get; set; }
-            public string A { get; set; }
-            public string B { get; set; }
-        }
-
         public class TestEntity
         {
             public int Id { get; set; }
+
             public string Property { get; set; }
+        }
+
+        public class TestEntityUnique
+        {
+            public string A { get; set; }
+            
+            public string B { get; set; }
+            
+            public int Id { get; set; }
         }
 
         private class TestDataContext : DbContext
@@ -65,11 +68,17 @@ namespace EfCore.InMemoryHelpers.Test
             { }
 
             public DbSet<TestEntity> TestEntities { get; set; }
+            
             public DbSet<TestEntityUnique> TestEntityUnique { get; set; }
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 var testEntity = modelBuilder.Entity<TestEntity>();
+                testEntity.HasKey(p => p.Id);
+
+                testEntity.Property(p => p.Id)
+                    .ValueGeneratedOnAdd();
+
                 testEntity.Property(b => b.Property)
                     .IsRequired();
 
@@ -77,7 +86,11 @@ namespace EfCore.InMemoryHelpers.Test
                     .IsUnique();
 
                 var testEntitySameTypes = modelBuilder.Entity<TestEntityUnique>();
-                testEntitySameTypes.HasIndex(u => new {u.A, u.B}).IsUnique();
+                testEntitySameTypes.HasKey(p => p.Id);
+
+                testEntitySameTypes.Property(p => p.Id)
+                    .ValueGeneratedOnAdd();
+                testEntitySameTypes.HasIndex(u => new { u.A, u.B }).IsUnique();
             }
         }
     }

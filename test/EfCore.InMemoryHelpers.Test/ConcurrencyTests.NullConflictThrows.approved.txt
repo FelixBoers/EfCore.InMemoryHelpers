@@ -1,1 +1,1 @@
-﻿Conflicts were detected for instance of entity type 'TestEntity' with the key value '{Id: 1}' on the concurrency token property values {Timestamp: }, with corresponding database values {Timestamp: System.Byte[]}.
+﻿Attempted to update or delete an entity that does not exist in the store.

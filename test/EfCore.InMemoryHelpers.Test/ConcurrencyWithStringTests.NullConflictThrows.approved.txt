@@ -1,1 +1,1 @@
-﻿Conflicts were detected for instance of entity type 'TestEntity' with the key value '{Id: 1}' on the concurrency token property values {ConcurrencyToken: 4b39590ea0894ab9a05912456bf700b6}, with corresponding database values {ConcurrencyToken: 573dfb98237e4f51bafaab0317777960}.
+﻿Attempted to update or delete an entity that does not exist in the store.

@@ -16,7 +16,10 @@ namespace EfCore.InMemoryHelpers
             {
                 foreach (var index in entry.Key.UniqueIndices())
                 {
-                    index.ValidateEntities(entry.Select(x => x.Entity));
+                    var changeTrackingEntities = entry.Select(x => x.Entity);
+                    var dbEntities = context.Query(entry.Key.ClrType).Cast<object>().Where(it => !changeTrackingEntities.Contains(it));
+
+                    index.ValidateEntities(dbEntities.Union(changeTrackingEntities));
                 }
             }
         }

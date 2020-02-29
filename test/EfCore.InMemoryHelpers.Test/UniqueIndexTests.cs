@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using ApprovalTests;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -18,8 +20,8 @@ namespace EfCore.InMemoryHelpers.Test
         {
             using (var context = InMemoryContextBuilder.Build<TestDataContext>())
             {
-                var entity1 = new TestEntityUnique {A = "a", B = "b"};
-                var entity2 = new TestEntityUnique {A = "b", B = "a"};
+                var entity1 = new TestEntityUnique { A = "a", B = "b" };
+                var entity2 = new TestEntityUnique { A = "b", B = "a" };
                 context.AddRange(entity1, entity2);
                 context.SaveChanges();
             }
@@ -43,6 +45,101 @@ namespace EfCore.InMemoryHelpers.Test
                 var exception = Assert.Throws<Exception>(() => context.SaveChanges());
                 Approvals.Verify(exception.Message);
             }
+        }
+
+        [Fact]
+        public void UniqueIndexReUsedContextThrows()
+        {
+            const string FAKE_DB_NAME = "FAKE-DB-NAME-1";
+            var context1 = InMemoryContextBuilder.Build<TestDataContext>(FAKE_DB_NAME);
+
+            var entity1 = new TestEntity
+            {
+                Property = "prop"
+            };
+            context1.Add(entity1);
+            context1.SaveChanges();
+
+            var context2 = InMemoryContextBuilder.Build<TestDataContext>(FAKE_DB_NAME);
+
+            var user2 = new TestEntity
+            {
+                Property = "prop"
+            };
+            context2.Add(user2);
+            var exception = Assert.Throws<Exception>(() => context2.SaveChanges());
+
+            context1.Dispose();
+            context2.Dispose();
+        }
+
+        [Fact]
+        public async Task UniqueIndexReUsedContextWithConcurrencyThrows()
+        {
+            const string FAKE_DB_NAME = "FAKE-DB-NAME-CONCURRENCY";
+            const int TEST_CASES = 10;
+
+            for (var i = 0; i < TEST_CASES; i++)
+            {
+                var builder = new DbContextOptionsBuilder<TestDataContext>();
+
+                TestDataContext GetContext() => InMemoryContextBuilder.Build<TestDataContext>(FAKE_DB_NAME);
+
+                var context = GetContext();
+
+                var task1 = Task.Run(async () =>
+                {
+                    var newContext = GetContext();
+                    var entity1 = new TestEntity
+                    {
+                        Property = "prop"
+                    };
+                    newContext.Add(entity1);
+                    await newContext.SaveChangesAsync();
+                    newContext.Dispose();
+                });
+                var task2 = Task.Run(async () =>
+                {
+                    var newContext = GetContext();
+                    var entity2 = new TestEntity
+                    {
+                        Property = "prop"
+                    };
+                    newContext.Add(entity2);
+                    await newContext.SaveChangesAsync();
+                    newContext.Dispose();
+                });
+
+                await Assert.ThrowsAsync<Exception>(async () => await Task.WhenAll(new[] { task1, task2 }));
+            }
+        }
+
+        [Fact]
+        public void UniqueIndexReUsedContextWhenEditingThrows()
+        {
+            const string FAKE_DB_NAME = "FAKE-DB-NAME-2";
+            var context1 = InMemoryContextBuilder.Build<TestDataContext>(FAKE_DB_NAME);
+
+            var entity1 = new TestEntity
+            {
+                Property = "prop1"
+            };
+            context1.Add(entity1);
+            var user2 = new TestEntity
+            {
+                Property = "prop2"
+            };
+            context1.Add(user2);
+            context1.SaveChanges();
+
+            var context2 = InMemoryContextBuilder.Build<TestDataContext>(FAKE_DB_NAME);
+            var editingItem = context2.Set<TestEntity>().Where(it => it.Property == "prop2").Single();
+            editingItem.Property = "prop1";
+
+            var exception = Assert.Throws<Exception>(() => context2.SaveChanges());
+
+            context1.Dispose();
+            context2.Dispose();
         }
 
         public class TestEntityUnique
@@ -77,7 +174,7 @@ namespace EfCore.InMemoryHelpers.Test
                     .IsUnique();
 
                 var testEntitySameTypes = modelBuilder.Entity<TestEntityUnique>();
-                testEntitySameTypes.HasIndex(u => new {u.A, u.B}).IsUnique();
+                testEntitySameTypes.HasIndex(u => new { u.A, u.B }).IsUnique();
             }
         }
     }

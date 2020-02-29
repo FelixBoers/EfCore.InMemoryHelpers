@@ -18,6 +18,7 @@ namespace EfCore.InMemoryHelpers
     {
         private readonly IStateManager inner;
         private readonly ConcurrencyValidator concurrencyValidator;
+        private static object ConcurrencyLock = new object();
 
         public StateManagerWrapper(IStateManager stateManager)
         {
@@ -27,16 +28,22 @@ namespace EfCore.InMemoryHelpers
 
         public int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            inner.Context.ValidateIndexes();
-            concurrencyValidator.ValidateIndexes(inner.Context);
-            return inner.SaveChanges(acceptAllChangesOnSuccess);
+            lock (ConcurrencyLock)
+            {
+                inner.Context.ValidateIndexes();
+                concurrencyValidator.ValidateIndexes(inner.Context);
+                return inner.SaveChanges(acceptAllChangesOnSuccess);
+            }
         }
 
         public Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellation = default)
         {
-            inner.Context.ValidateIndexes();
-            concurrencyValidator.ValidateIndexes(inner.Context);
-            return inner.SaveChangesAsync(acceptAllChangesOnSuccess, cancellation);
+            lock (ConcurrencyLock)
+            {
+                inner.Context.ValidateIndexes();
+                concurrencyValidator.ValidateIndexes(inner.Context);
+                return inner.SaveChangesAsync(acceptAllChangesOnSuccess, cancellation);
+            }
         }
 
         public void ResetState()

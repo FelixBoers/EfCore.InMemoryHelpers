@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace EfCore.InMemoryHelpers
@@ -24,7 +27,15 @@ namespace EfCore.InMemoryHelpers
 
         public static ulong NewLong()
         {
-            return (ulong) Interlocked.Increment(ref counter);
+            return (ulong)Interlocked.Increment(ref counter);
         }
+
+        public static IQueryable Query(this DbContext context, string entityName) =>
+            context.Query(context.Model.FindEntityType(entityName).ClrType);
+
+        static readonly MethodInfo SetMethod = typeof(DbContext).GetMethod(nameof(DbContext.Set));
+
+        public static IQueryable Query(this DbContext context, Type entityType) =>
+            (IQueryable)SetMethod.MakeGenericMethod(entityType).Invoke(context, null);
     }
 }
